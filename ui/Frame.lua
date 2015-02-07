@@ -8,6 +8,7 @@ function Frame.new(ui, x, y, w, h, settings)
     self.id = self.ui.addToElementsList(self)
     self.type = 'Frame'
 
+    self.ix, self.iy = x, y
     self.x, self.y = x, y
     self.w, self.h = w, h
     local settings = settings or {}
@@ -19,13 +20,13 @@ function Frame.new(ui, x, y, w, h, settings)
     self.input:bind('mouse1', 'left-click')
     self.input:bind('escape', 'close')
 
-    self.hot = false -- true if the mouse is over the object (inside its x, y, w, h rectangle)
-    self.selected = false -- true if currently selected with TAB (for instance) so it can be pressed with a key
-    self.down = false -- true if currently being pressed
-    self.enter = false -- true on the frame the mouse has entered the frame
-    self.exit = false -- true on the frame the mouse has exited the frame
-    self.selected_enter = false -- true on the frame the button was selected
-    self.selected_exit = false -- true on the frame the button was unselected
+    self.hot = false
+    self.selected = false
+    self.down = false
+    self.enter = false
+    self.exit = false
+    self.selected_enter = false
+    self.selected_exit = false
 
     self.closeable = settings.closeable or false
     self.closing = false
@@ -34,7 +35,8 @@ function Frame.new(ui, x, y, w, h, settings)
     self.close_button_width = settings.close_button_width or 10
     self.close_button_height = settings.close_button_height or 10
     self.close_button = self.ui.Button(self.w - self.close_margin - self.close_button_width, self.close_margin,
-                                       self.close_button_width, self.close_button_height, {theme = self.theme})
+                                       self.close_button_width, self.close_button_height, 
+                                      {extensions = settings.close_button_extensions or {}, annotation = "Frame's close button"})
 
     self.draggable = settings.draggable or false
     self.drag_hot = false
@@ -49,6 +51,8 @@ function Frame.new(ui, x, y, w, h, settings)
     self.resize_margin = settings.resize_margin or 6
     self.min_width = settings.min_width or 20
     self.min_height = settings.min_height or self.h/5
+    self.resize_drag_x = nil
+    self.resize_drag_y = nil
 
     self.elements = {}
     self.currently_focused_element = nil
@@ -60,23 +64,19 @@ function Frame.new(ui, x, y, w, h, settings)
 
     -- Initialize extesions
     for _, extension in ipairs(self.extensions or {}) do
-        if extension.Frame and extension.Frame.new then
-            extension.Frame.new(self)
-        end
-    end
-
-    -- Initialize theme
-    if self.theme and self.theme.Frame and self.theme.Frame.new then
-        self.theme.Frame.new(self)
+        if extension.new then extension.new(self) end
     end
 
     return setmetatable(self, Frame)
 end
 
-function Frame:update(dt)
+function Frame:update(dt, parent)
     if self.closed then return end
 
     local x, y = love.mouse.getPosition()
+    if parent then
+        self.x, self.y = parent.x + self.ix, parent.y + self.iy
+    end
 
     -- Check for hot
     if x >= self.x and x <= self.x + self.w and y >= self.y and y <= self.y + self.h then
@@ -165,13 +165,22 @@ function Frame:update(dt)
     -- Resize
     if self.resize_hot and self.input:pressed('left-click') then
         self.resizing = true
+        if (x >= self.x and x <= self.x + self.resize_margin and y >= self.y and y <= self.y + self.h) then self.resize_drag_x = -1 end
+        if (x >= self.x and x <= self.x + self.w and y >= self.y and y <= self.y + self.resize_margin) then self.resize_drag_y = -1 end
+        if (x >= self.x + self.w - self.resize_margin and x <= self.x + self.w and y >= self.y and y <= self.y + self.h) then self.resize_drag_x = 1 end
+        if (x >= self.x and x <= self.x + self.w and y >= self.y + self.h - self.resize_margin and y <= self.y + self.h) then self.resize_drag_y = 1 end
     end
     if self.resizing and self.input:down('left-click') then
         local dx, dy = x - self.previous_mouse_position.x, y - self.previous_mouse_position.y
-        self.w, self.h = math.max(self.w + dx, self.min_width), math.max(self.h + dy, self.min_height)
+        if self.resize_drag_x == -1 then self.x = self.x + dx end
+        if self.resize_drag_y == -1 then self.y = self.y + dy end
+        if self.resize_drag_x then self.w = math.max(self.w + self.resize_drag_x*dx, self.min_width) end
+        if self.resize_drag_y then self.h = math.max(self.h + self.resize_drag_y*dy, self.min_height) end
     end
     if self.resizing and self.input:released('left-click') then
         self.resizing = false
+        self.resize_drag_x = nil
+        self.resize_drag_y = nil
     end
 
     -- Focus on elements
@@ -192,14 +201,7 @@ function Frame:update(dt)
 
     -- Update extensions
     for _, extension in ipairs(self.extensions or {}) do
-        if extension.Frame and extension.Frame.update then
-            extension.Frame.update(self, dt, parent)
-        end
-    end
-
-    -- Update theme
-    if self.theme and self.theme.Frame and self.theme.Frame.update then
-        self.theme.Frame.update(self, dt, parent)
+        if extension.update then extension.update(self, dt, parent) end
     end
 
     for _, element in ipairs(self.elements) do element:update(dt, self) end
@@ -218,14 +220,7 @@ function Frame:draw()
 
     -- Draw extensions
     for _, extension in ipairs(self.extensions or {}) do
-        if extension.Frame and extension.Frame.draw then
-            extension.Frame.draw(self)
-        end
-    end
-
-    -- Draw theme
-    if self.theme and self.theme.Frame and self.theme.Frame.draw then 
-        self.theme.Frame.draw(self) 
+        if extension.draw then extension.draw(self) end
     end
 
     if self.closeable then self.close_button:draw() end

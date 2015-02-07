@@ -28,15 +28,15 @@ function Textinput.new(ui, x, y, w, h, settings)
     self.input:bind('v', 'paste')
     self.input:bind('a', 'all')
 
-    self.hot = false -- true if the mouse is over the object (inside its x, y, w, h rectangle)
-    self.selected = false -- true if currently selected with TAB (for instance) so it can be pressed with a key
-    self.down = false -- true if currently being pressed
-    self.pressed = false -- true on the frame it has been pressed
-    self.released = false -- true on the frame it has been released
-    self.enter = false -- true on the frame the mouse has entered the frame
-    self.exit = false -- true on the frame the mouse has exited the frame
-    self.selected_enter = false -- true on the frame the button was selected
-    self.selected_exit = false -- true on the frame the button was unselected
+    self.hot = false
+    self.selected = false
+    self.down = false
+    self.pressed = false
+    self.released = false
+    self.enter = false
+    self.exit = false
+    self.selected_enter = false
+    self.selected_exit = false
 
     self.string = {}
     self.copy_buffer = {}
@@ -64,14 +64,7 @@ function Textinput.new(ui, x, y, w, h, settings)
 
     -- Initialize extesions
     for _, extension in ipairs(self.extensions or {}) do
-        if extension.Textinput and extension.Textinput.new then
-            extension.Textinput.new(self)
-        end
-    end
-
-    -- Initialize theme
-    if self.theme and self.theme.Textinput and self.theme.Textinput.new then
-        self.theme.Textinput.new(self)
+        if extension.new then extension.new(self) end
     end
 
     return setmetatable(self, Textinput)
@@ -211,14 +204,7 @@ function Textinput:update(dt, parent)
 
     -- Update extensions
     for _, extension in ipairs(self.extensions or {}) do
-        if extension.Textinput and extension.Textinput.update then
-            extension.Textinput.update(self, dt, parent)
-        end
-    end
-
-    -- Update theme
-    if self.theme and self.theme.Textinput and self.theme.Textinput.update then
-        self.theme.Textinput.update(self, dt, parent)
+        if extension.update then extension.update(self, dt, parent) end
     end
 
     -- Last frame state
@@ -324,14 +310,7 @@ end
 function Textinput:draw(parent)
     -- Draw extensions
     for _, extension in ipairs(self.extensions or {}) do
-        if extension.Textinput and extension.Textinput.draw then
-            extension.Textinput.draw(self)
-        end
-    end
-
-    -- Draw theme
-    if self.theme and self.theme.Textinput and self.theme.Textinput.draw then 
-        self.theme.Textinput.draw(self) 
+        if extension.draw then extension.draw(self) end
     end
 end
 
@@ -405,6 +384,8 @@ function Textinput:join(table)
 end
 
 function Textinput:setText(text)
+    self.string = {}
+    self.index = 1
     for i = 1, #text do 
         if self.text_max_length and #self.string >= self.text_max_length then return end
         self:deleteSelected()

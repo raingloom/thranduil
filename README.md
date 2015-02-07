@@ -392,8 +392,6 @@ local button = frame:getElement(button_id)
 
 ```lua
 frame.draw = function(self)
-  if self.closed then return end -- don't draw anything if the frame is closed
-  
   -- Draw frame
   love.graphics.setColor(64, 64, 64)
   if self.hot then love.graphics.setColor(96, 96, 96) end
@@ -417,18 +415,6 @@ frame.draw = function(self)
     if self.dragging then love.graphics.setColor(48, 48, 48) end
     love.graphics.rectangle('fill', self.x, self.y, self.w, self.drag_margin)
   end
-  
-  -- Draw close button
-  if self.closeable then
-    local cb = self.close_button
-    love.graphics.setColor(64, 64, 64)
-    if cb.hot then love.graphics.setColor(96, 96, 96) end
-    if cb.down then love.graphics.setColor(32, 32, 32) end
-    love.graphics.rectangle('fill', cb.x, cb.y, cb.w, cb.h)
-  end
-  
-  -- Draw elements in the frame
-  for _, element in ipairs(self.elements) do element:draw() end
 end
 ```
 

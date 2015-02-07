@@ -58,8 +58,12 @@ UI.Input = require(ui_path .. 'Input/Input')
 
 local Button = require(ui_path .. 'Button')
 UI.Button = function(...) return Button(UI, ...) end
+local Checkbox = require(ui_path .. 'Checkbox')
+UI.Checkbox = function(...) return Checkbox(UI, ...) end
 local Frame = require(ui_path .. 'Frame')
 UI.Frame = function(...) return Frame(UI, ...) end
+local Slider = require(ui_path .. 'Slider')
+UI.Slider = function(...) return Slider(UI, ...) end
 local Textinput = require(ui_path .. 'Textinput')
 UI.Textinput = function(...) return Textinput(UI, ...) end
 

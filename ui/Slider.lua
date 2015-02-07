@@ -1,12 +1,12 @@
-local Button = {}
-Button.__index = Button
+local Slider = {}
+Slider.__index = Slider
 
-function Button.new(ui, x, y, w, h, settings)
+function Slider.new(ui, x, y, w, h, settings)
     local self = {}
 
     self.ui = ui
     self.id = self.ui.addToElementsList(self)
-    self.type = 'Button'
+    self.type = 'Slider'
 
     self.ix, self.iy = x, y
     self.x, self.y = x, y
@@ -15,8 +15,9 @@ function Button.new(ui, x, y, w, h, settings)
     for k, v in pairs(settings) do self[k] = v end
 
     self.input = self.ui.Input()
-    self.input:bind('return', 'key-enter')
     self.input:bind('mouse1', 'left-click')
+    self.input:bind('left', 'move-left')
+    self.input:bind('right', 'move-right')
 
     self.hot = false
     self.selected = false
@@ -28,28 +29,24 @@ function Button.new(ui, x, y, w, h, settings)
     self.selected_enter = false
     self.selected_exit = false
 
-    self.pressing = false
-    self.previous_hot = false
-    self.previous_selected = false
-    self.previous_pressed = false
-    self.previous_released = false
+    self.value = settings.value or 0
+    self.value_interval = settings.value_interval or 1
+    self.max_value = settings.max_value or self.w
+    self.min_value = settings.min_value or 0
+    self.slider_x = ((self.value - self.min_value)/(self.max_value - self.min_value))*(self.w) + self.x 
 
     -- Initialize extensions
     for _, extension in ipairs(self.extensions or {}) do
         if extension.new then extension.new(self) end
     end
 
-    return setmetatable(self, Button)
+    return setmetatable(self, Slider)
 end
 
-function Button:update(dt, parent)
+function Slider:update(dt, parent)
     local x, y = love.mouse.getPosition()
-    if parent then 
-        if parent.type == 'Frame' and self.annotation == "Frame's close button" then
-            self.ix = parent.w - parent.close_margin - parent.close_button_width
-            self.iy = parent.close_margin
-        end
-        self.x, self.y = parent.x + self.ix, parent.y + self.iy 
+    if parent then
+        self.x, self.y = parent.x + self.ix, parent.y + self.iy
     end
 
     -- Check for hot
@@ -91,55 +88,57 @@ function Button:update(dt, parent)
         self.down = false
     end
 
-    -- Check for pressed/released/down on key press
-    if self.selected and self.input:pressed('key-enter') then
-        self.pressed = true
-        self.pressing = true
+    -- Check for move left/right
+    if self.selected and self.input:pressed('move-left') then
+        self.pressed_time = love.timer.getTime()
+        self:moveLeft()
     end
-    if self.pressing and self.input:down('key-enter') then
-        self.down = true
+    if self.selected and self.input:down('move-left') then
+        local d = love.timer.getTime() - self.pressed_time
+        if d > 0.2 then self:moveLeft() end
     end
-    if self.pressing and self.input:released('key-enter') then
-        self.released = true
-        self.pressing = false
-        self.down = false
+    if self.selected and self.input:pressed('move-right') then
+        self.pressed_time = love.timer.getTime()
+        self:moveRight()
     end
+    if self.selected and self.input:down('move-right') then
+        local d = love.timer.getTime() - self.pressed_time
+        if d > 0.2 then self:moveRight() end
+    end
+
+    -- Change value
+    if self.hot and self.down then
+        self.value = ((x - self.x)/(self.w))*(self.max_value - self.min_value) + self.min_value
+        self.value = self.value_interval*math.ceil(self.value/self.value_interval)
+    end
+
+    self.slider_x = ((self.value - self.min_value)/(self.max_value - self.min_value))*(self.w) + self.x 
 
     -- Update extensions
     for _, extension in ipairs(self.extensions or {}) do
         if extension.update then extension.update(self, dt, parent) end
     end
 
-    if self.pressed and self.previous_pressed then self.pressed = false end
-    if self.released and self.previous_released then self.released = false end
-
     -- Set previous frame state
     self.previous_hot = self.hot
-    self.previous_pressed = self.pressed
-    self.previous_released = self.released
     self.previous_selected = self.selected
 
     self.input:update(dt)
 end
 
-function Button:draw()
+function Slider:draw()
     -- Draw extensions
     for _, extension in ipairs(self.extensions or {}) do
         if extension.draw then extension.draw(self) end
     end
 end
 
-function Button:bind(key, action)
-    self.input:bind(key, action)
+function Slider:moveLeft()
+    self.value = math.max(self.value - self.value_interval, self.min_value)
 end
 
-function Button:destroy()
-    self.ui.removeFromElementsList(self.id)
+function Slider:moveRight()
+    self.value = math.min(self.value + self.value_interval, self.max_value)
 end
 
-function Button:press()
-    self.pressed = true
-    self.released = true
-end
-
-return setmetatable({new = new}, {__call = function(_, ...) return Button.new(...) end})
+return setmetatable({new = new}, {__call = function(_, ...) return Slider.new(...) end})
