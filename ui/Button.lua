@@ -129,12 +129,12 @@ function Button:draw()
     end
 end
 
-function Button:bind(key, action)
-    self.input:bind(key, action)
-end
-
 function Button:destroy()
     self.ui.removeFromElementsList(self.id)
+end
+
+function Button:bind(key, action)
+    self.input:bind(key, action)
 end
 
 function Button:press()

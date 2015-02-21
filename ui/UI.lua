@@ -12,12 +12,12 @@ UI.keyreleased = function(key)
         t.input:keyreleased(key)
     end
 end
-UI.mousepressed = function(button) 
+UI.mousepressed = function(x, y, button) 
     for _, t in ipairs(UI.elements) do
         t.input:mousepressed(button)
     end
 end
-UI.mousereleased = function(button) 
+UI.mousereleased = function(x, y, button) 
     for _, t in ipairs(UI.elements) do
         t.input:mousereleased(button)
     end
@@ -45,13 +45,25 @@ UI.textinput = function(text)
     end
 end
 
-UI.elements = {}
+UI.registerEvents = function()
+    local callbacks = {'keypressed', 'keyreleased', 'mousepressed', 'mousereleased', 'gamepadpressed', 'gamepadreleased', 'gamepadaxis', 'textinput'}
+    local old_functions = {}
+    local empty_function = function() end
+    for _, f in ipairs(callbacks) do
+        old_functions[f] = love[f] or empty_function
+        love[f] = function(...)
+            old_functions[f](...)
+            UI[f](...)
+        end
+    end
+end
+
+UI.UID = 0
+UI.getUID = function() UI.UID = UI.UID + 1; return UI.UID end
+UI.elements = setmetatable({}, {__mode = 'v'})
 UI.addToElementsList = function(element)
     table.insert(UI.elements, element)
-    return #UI.elements
-end
-UI.removeFromElementsList = function(id)
-    table.remove(UI.elements, id)
+    return UI.getUID()
 end
 
 UI.Input = require(ui_path .. 'Input/Input')

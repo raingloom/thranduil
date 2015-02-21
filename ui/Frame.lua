@@ -243,10 +243,6 @@ function Frame:bind(key, action)
     self.input:bind(key, action)
 end
 
-function Frame:destroy()
-    self.ui.removeFromElementsList(self.id)
-end
-
 function Frame:focusNext()
     for i, element in ipairs(self.elements) do 
         if element.selected then self.currently_focused_element = i end

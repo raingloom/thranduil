@@ -6,6 +6,7 @@ function Textinput.new(ui, x, y, w, h, settings)
 
     self.ui = ui
     self.id = self.ui.addToElementsList(self)
+    self.type = 'Textinput'
 
     self.ix, self.iy = x, y
     self.x, self.y = x, y
@@ -325,10 +326,6 @@ function Textinput:textinput(text)
     table.insert(self.string, self.index, text)
     self.index = self.index + 1
     -- print(self:join(), text)
-end
-
-function Textinput:destroy()
-    self.ui.removeFromElementsList(self.id)
 end
 
 function Textinput:pasteCopyBuffer()
