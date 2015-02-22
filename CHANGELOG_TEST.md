@@ -26,6 +26,7 @@ Documentation needed:
 
 ### v0.2.3
 
+
 #### Fixes
 
 * Fixed multiple bugs in various areas - [966cf1d](https://github.com/adonaac/thranduil/commit/966cf1de31c4ac4e36d3ce90773a621f3b526a13) (2015-01-23 01:43:06)
@@ -82,6 +83,7 @@ Documentation needed:
 
 ### v0.1.5
 
+
 #### Fixes
 
 * Fixed bezier links misbehaving on extreme turns - [39eeedd](https://github.com/adonaac/thranduil/commit/39eeedd17a437903019591a9556ca87462c9b16b) (2015-01-20 05:46:25)
@@ -89,6 +91,7 @@ Documentation needed:
 ---
 
 ### v0.1.4
+
 
 #### Updates
 
@@ -153,6 +156,7 @@ Documentation needed:
 
 ### v0.0.9
 
+
 #### Fixes
 
 * Fixed some issues with node visual juice - [624c985](https://github.com/adonaac/thranduil/commit/624c985bab06d3fd193e0e9a297f1e8fcdbb93e6) (2015-01-19 06:28:00)
@@ -180,9 +184,11 @@ Documentation needed:
 #### Additions
 
 * Added more node styling options - [37b746b](https://github.com/adonaac/thranduil/commit/37b746bb24710e47cc9a8c7771d6da8ef6061696) (2015-01-18 00:24:54)
+
 #### Removed
 
 * Removed justify textarea buttons - [b16087b](https://github.com/adonaac/thranduil/commit/b16087bbeb543f1cb54fcf41ccb34a98d71fcfec) (2015-01-17 23:53:00)
+
 #### Renamed
 
 * Renamed certain textarea buttons - [b16087b](https://github.com/adonaac/thranduil/commit/b16087bbeb543f1cb54fcf41ccb34a98d71fcfec) (2015-01-17 23:53:00)
@@ -190,6 +196,7 @@ Documentation needed:
 ---
 
 ### v0.0.5
+
 
 #### Fixes
 
