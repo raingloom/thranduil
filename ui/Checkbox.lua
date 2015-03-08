@@ -1,9 +1,7 @@
-local Checkbox = {}
-Checkbox.__index = Checkbox
+local Object = require((...):sub(1, (...):find('/')) .. 'classic/classic')
+local Checkbox = Object:extend('Checkbox')
 
-function Checkbox.new(ui, x, y, w, h, settings)
-    local self = {}
-
+function Checkbox:new(ui, x, y, w, h, settings)
     self.ui = ui
     self.id = self.ui.addToElementsList(self)
     self.type = 'Checkbox'
@@ -41,8 +39,6 @@ function Checkbox.new(ui, x, y, w, h, settings)
     for _, extension in ipairs(self.extensions or {}) do
         if extension.new then extension.new(self) end
     end
-
-    return setmetatable(self, Checkbox)
 end
 
 function Checkbox:update(dt, parent)
@@ -142,4 +138,4 @@ function Checkbox:draw()
     end
 end
 
-return setmetatable({new = new}, {__call = function(_, ...) return Checkbox.new(...) end})
+return Checkbox

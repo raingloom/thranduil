@@ -1,6 +1,8 @@
 local ui_path = tostring(...):sub(1, -3)
 local UI = {}
 require(ui_path .. 'utf8')
+UI.Object = require(ui_path .. 'classic/classic')
+UI.Input = require(ui_path .. 'Input/Input')
 
 UI.keypressed = function(key) 
     for _, t in ipairs(UI.elements) do
@@ -58,15 +60,31 @@ UI.registerEvents = function()
     end
 end
 
-UI.UID = 0
-UI.getUID = function() UI.UID = UI.UID + 1; return UI.UID end
+UI.uids = {}
+UI.getUID = function(id) 
+    if id then
+        if not UI.uids[id] then
+            UI.uids[id] = true
+            return id
+        else 
+            error("id conflict: #" .. id) 
+        end
+    else
+        local i = 1
+        while true do
+            if not UI.uids[i] then
+                UI.uids[i] = true
+                return i
+            end
+            i = i + 1
+        end
+    end
+end
 UI.elements = setmetatable({}, {__mode = 'v'})
 UI.addToElementsList = function(element)
     table.insert(UI.elements, element)
     return UI.getUID()
 end
-
-UI.Input = require(ui_path .. 'Input/Input')
 
 local Button = require(ui_path .. 'Button')
 UI.Button = function(...) return Button(UI, ...) end

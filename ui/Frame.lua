@@ -1,9 +1,7 @@
-local Frame = {}
-Frame.__index = Frame
+local Object = require((...):sub(1, (...):find('/')) .. 'classic/classic')
+local Frame = Object:extend('Frame')
 
-function Frame.new(ui, x, y, w, h, settings)
-    local self = {}
-
+function Frame:new(ui, x, y, w, h, settings)
     self.ui = ui
     self.id = self.ui.addToElementsList(self)
     self.type = 'Frame'
@@ -66,17 +64,13 @@ function Frame.new(ui, x, y, w, h, settings)
     for _, extension in ipairs(self.extensions or {}) do
         if extension.new then extension.new(self) end
     end
-
-    return setmetatable(self, Frame)
 end
 
 function Frame:update(dt, parent)
     if self.closed then return end
 
     local x, y = love.mouse.getPosition()
-    if parent then
-        self.x, self.y = parent.x + self.ix, parent.y + self.iy
-    end
+    if parent then self.x, self.y = parent.x + self.ix, parent.y + self.iy end
 
     -- Check for hot
     if x >= self.x and x <= self.x + self.w and y >= self.y and y <= self.y + self.h then
@@ -184,14 +178,20 @@ function Frame:update(dt, parent)
     end
 
     -- Focus on elements
-    if not self.input:down('previous-modifier') and self.input:pressed('focus-next') then self:focusNext() end
-    if self.input:down('previous-modifier') and self.input:pressed('focus-next') then self:focusPrevious() end
+    if self.selected and not self.input:down('previous-modifier') and self.input:pressed('focus-next') then self:focusNext() end
+    if self.selected and self.input:down('previous-modifier') and self.input:pressed('focus-next') then self:focusPrevious() end
     for i, element in ipairs(self.elements) do
         if not element.selected or not i == self.currently_focused_element then
             element.selected = false
         end
         if i == self.currently_focused_element then
             element.selected = true
+        end
+    end
+    -- Unfocus all elements if the frame isn't being interacted with
+    if not self.selected then
+        for i, element in ipairs(self.elements) do
+            element.selected = false
         end
     end
 
@@ -230,13 +230,7 @@ end
 function Frame:addElement(element)
     element.parent = self
     table.insert(self.elements, element)
-    return element.id
-end
-
-function Frame:getElement(id)
-    for _, element in ipairs(self.elements) do
-        if element.id == id then return element end
-    end
+    return element
 end
 
 function Frame:bind(key, action)
@@ -269,4 +263,5 @@ function Frame:focusPrevious()
     else self.currently_focused_element = #self.elements end
 end
 
-return setmetatable({new = new}, {__call = function(_, ...) return Frame.new(...) end})
+return Frame
+

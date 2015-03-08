@@ -1,9 +1,7 @@
-local Textinput = {}
-Textinput.__index = Textinput
+local Object = require((...):sub(1, (...):find('/')) .. 'classic/classic')
+local Textinput = Object:extend('Textinput')
 
-function Textinput.new(ui, x, y, w, h, settings)
-    local self = {}
-
+function Textinput:new(ui, x, y, w, h, settings)
     self.ui = ui
     self.id = self.ui.addToElementsList(self)
     self.type = 'Textinput'
@@ -67,8 +65,6 @@ function Textinput.new(ui, x, y, w, h, settings)
     for _, extension in ipairs(self.extensions or {}) do
         if extension.new then extension.new(self) end
     end
-
-    return setmetatable(self, Textinput)
 end
 
 function Textinput:update(dt, parent)
@@ -452,4 +448,5 @@ function Textinput:delete()
     end
 end
 
-return setmetatable({new = new}, {__call = function(_, ...) return Textinput.new(...) end})
+return Textinput
+

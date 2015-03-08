@@ -6,21 +6,27 @@ TestTheme.Button.draw = function(self)
     if self.hot then love.graphics.setColor(96, 96, 96) end
     if self.down then love.graphics.setColor(32, 32, 32) end
     love.graphics.rectangle('fill', self.x, self.y, self.w, self.h)
+    if self.selected then 
+        love.graphics.setColor(128, 32, 32) 
+        love.graphics.rectangle('line', self.x, self.y, self.w, self.h)
+    end
 end
 
 TestTheme.Checkbox = {}
 TestTheme.Checkbox.draw = function(self)
     love.graphics.setColor(64, 64, 64)
     love.graphics.rectangle('fill', self.x, self.y, self.w, self.h)
-
     if self.hot then 
         love.graphics.setColor(96, 96, 96) 
         love.graphics.rectangle('fill', self.x + self.w/6, self.y + self.h/6, 4*self.w/6, 4*self.h/6)
     end
-
     if self.checked then
         love.graphics.setColor(128, 128, 128) 
         love.graphics.rectangle('fill', self.x + self.w/6, self.y + self.h/6, 4*self.w/6, 4*self.h/6)
+    end
+    if self.selected then 
+        love.graphics.setColor(128, 32, 32) 
+        love.graphics.rectangle('line', self.x, self.y, self.w, self.h)
     end
 end
 
@@ -29,10 +35,13 @@ TestTheme.Slider.draw = function(self)
     love.graphics.setColor(64, 64, 64)
     if self.hot then love.graphics.setColor(96, 96, 96) end
     love.graphics.rectangle('fill', self.x, self.y, self.w, self.h)
-
     love.graphics.setColor(48, 48, 48)
     if self.down then love.graphics.setColor(32, 32, 32) end
     love.graphics.rectangle('fill', self.x, self.y, self.slider_x - self.x, self.h)
+    if self.selected then 
+        love.graphics.setColor(128, 32, 32) 
+        love.graphics.rectangle('line', self.x, self.y, self.w, self.h)
+    end
 end
 
 TestTheme.Frame = {}
@@ -58,6 +67,11 @@ TestTheme.Frame.draw = function(self)
         if self.drag_hot then love.graphics.setColor(48, 48, 48) end
         if self.dragging then love.graphics.setColor(16, 16, 16) end
         love.graphics.rectangle('fill', self.x, self.y, self.w, self.drag_margin)
+    end
+
+    if self.selected then 
+        love.graphics.setColor(128, 32, 32) 
+        love.graphics.rectangle('line', self.x, self.y, self.w, self.h)
     end
 end
 

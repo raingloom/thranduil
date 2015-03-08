@@ -1,9 +1,7 @@
-local Slider = {}
-Slider.__index = Slider
+local Object = require((...):sub(1, (...):find('/')) .. 'classic/classic')
+local Slider = Object:extend('Slider')
 
-function Slider.new(ui, x, y, w, h, settings)
-    local self = {}
-
+function Slider:new(ui, x, y, w, h, settings)
     self.ui = ui
     self.id = self.ui.addToElementsList(self)
     self.type = 'Slider'
@@ -39,8 +37,6 @@ function Slider.new(ui, x, y, w, h, settings)
     for _, extension in ipairs(self.extensions or {}) do
         if extension.new then extension.new(self) end
     end
-
-    return setmetatable(self, Slider)
 end
 
 function Slider:update(dt, parent)
@@ -141,4 +137,5 @@ function Slider:moveRight()
     self.value = math.min(self.value + self.value_interval, self.max_value)
 end
 
-return setmetatable({new = new}, {__call = function(_, ...) return Slider.new(...) end})
+return Slider
+

@@ -1,9 +1,7 @@
-local Button = {}
-Button.__index = Button
+local Object = require((...):sub(1, (...):find('/')) .. 'classic/classic')
+local Button = Object:extend('Button')
 
-function Button.new(ui, x, y, w, h, settings)
-    local self = {}
-
+function Button:new(ui, x, y, w, h, settings)
     self.ui = ui
     self.id = self.ui.addToElementsList(self)
     self.type = 'Button'
@@ -38,8 +36,6 @@ function Button.new(ui, x, y, w, h, settings)
     for _, extension in ipairs(self.extensions or {}) do
         if extension.new then extension.new(self) end
     end
-
-    return setmetatable(self, Button)
 end
 
 function Button:update(dt, parent)
@@ -129,10 +125,6 @@ function Button:draw()
     end
 end
 
-function Button:destroy()
-    self.ui.removeFromElementsList(self.id)
-end
-
 function Button:bind(key, action)
     self.input:bind(key, action)
 end
@@ -142,4 +134,4 @@ function Button:press()
     self.released = true
 end
 
-return setmetatable({new = new}, {__call = function(_, ...) return Button.new(...) end})
+return Button
