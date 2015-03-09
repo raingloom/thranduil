@@ -1,9 +1,11 @@
 local ui_path = (...):sub(1, (...):find('/'))
 local Object = require(ui_path .. 'classic/classic')
 local Closeable = require(ui_path .. 'Closeable')
+local Draggable = require(ui_path .. 'Draggable')
 local Resizable = require(ui_path .. 'Resizable')
 local Frame = Object:extend('Frame')
 Frame:implement(Closeable)
+Frame:implement(Draggable)
 Frame:implement(Resizable)
 
 function Frame:new(ui, x, y, w, h, settings)
@@ -38,24 +40,20 @@ function Frame:new(ui, x, y, w, h, settings)
     end
 
     self.draggable = settings.draggable or false
-    self.drag_hot = false
-    self.drag_enter = false
-    self.drag_exit = false
-    self.dragging = false
-    self.drag_margin = settings.drag_margin or self.h/5
+    if self.draggable then 
+        self:draggableNew(settings) 
+    end
 
     self.resizable = settings.resizable or false
-    if self.resizable then
-        self:resizableNew(settings)
+    if self.resizable then 
+        self:resizableNew(settings) 
     end
 
     self.elements = {}
     self.currently_focused_element = nil
 
-    self.previous_mouse_position = nil
     self.previous_hot = false
     self.previous_selected = false
-    self.previous_drag_hot = false
 
     -- Initialize extesions
     for _, extension in ipairs(self.extensions or {}) do
@@ -101,38 +99,9 @@ function Frame:update(dt, parent)
         self.selected_exit = true
     else self.selected_exit = false end
 
-    if self.draggable then
-        -- Check for drag_hot
-        if self.hot and x >= self.x and x <= self.x + self.w and y >= self.y and y <= self.y + self.drag_margin then
-            self.drag_hot = true
-        else self.drag_hot = false end
-
-        -- Check for drag_enter
-        if self.drag_hot and not self.previous_drag_hot then
-            self.drag_enter = true
-        else self.drag_enter = false end
-
-        -- Check for drag_exit
-        if not self.drag_hot and self.previous_drag_hot then
-            self.drag_exit = true
-        else self.drag_exit = false end
-    end
-
     if self.resizable then self:resizableUpdate(dt) end
     if self.closeable then self:closeableUpdate(dt) end
-
-    -- Drag
-    if self.drag_hot and self.input:pressed('left-click') then
-        self.dragging = true
-    end
-    -- Resizing has precedence over dragging
-    if self.dragging and not self.resizing and self.input:down('left-click') then
-        local dx, dy = x - self.previous_mouse_position.x, y - self.previous_mouse_position.y
-        self.x, self.y = self.x + dx, self.y + dy
-    end
-    if self.dragging and self.input:released('left-click') then
-        self.dragging = false
-    end
+    if self.draggable then self:draggableUpdate(dt) end
 
     -- Focus on elements
     if self.selected and not self.input:down('previous-modifier') and self.input:pressed('focus-next') then self:focusNext() end
@@ -162,8 +131,6 @@ function Frame:update(dt, parent)
     -- Set previous frame state
     self.previous_hot = self.hot
     self.previous_selected = self.selected
-    self.previous_drag_hot = self.drag_hot
-    self.previous_mouse_position = {x = x, y = y}
 
     self.input:update(dt)
 end
