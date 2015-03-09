@@ -26,6 +26,8 @@ function Closeable:closeableUpdate(dt)
     if self.selected and self.input:pressed('close') then
         self.closed = true
     end
+
+    self.close_button:update(dt, self)
 end
 
 function Closeable:closeableDraw()
