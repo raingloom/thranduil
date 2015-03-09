@@ -1,6 +1,20 @@
-v0.0.2
+v0.0.3
 
 ## CHANGELOG
+
+### v0.0.3
+
+
+#### Removed
+
+* Removed Textinput (adding Textarea and then Textinput is just a Textarea with line height = 1) - [b70fd4d](https://github.com/adonaac/thranduil/commit/b70fd4d045fcd1871af171f62e8c03c6c90be3f5) (2015-03-09 02:16:04)
+
+#### Updates
+
+* Changed all UI elements to use the Base mixin - [2572647](https://github.com/adonaac/thranduil/commit/257264759695817cf051978a3268636ebe243407) (2015-03-09 01:17:24)
+* Changed all UI elements to use Draggable, Resizable mixins - [b70fd4d](https://github.com/adonaac/thranduil/commit/b70fd4d045fcd1871af171f62e8c03c6c90be3f5) (2015-03-09 02:16:04)
+
+---
 
 ### v0.0.2
 
