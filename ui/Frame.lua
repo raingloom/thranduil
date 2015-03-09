@@ -1,5 +1,8 @@
-local Object = require((...):sub(1, (...):find('/')) .. 'classic/classic')
+local ui_path = (...):sub(1, (...):find('/'))
+local Object = require(ui_path .. 'classic/classic')
+local Closeable = require(ui_path .. 'Closeable')
 local Frame = Object:extend('Frame')
+Frame:implement(Closeable)
 
 function Frame:new(ui, x, y, w, h, settings)
     self.ui = ui
@@ -27,14 +30,10 @@ function Frame:new(ui, x, y, w, h, settings)
     self.selected_exit = false
 
     self.closeable = settings.closeable or false
-    self.closing = false
-    self.closed = settings.closed or false
-    self.close_margin = settings.close_margin or 5
-    self.close_button_width = settings.close_button_width or 10
-    self.close_button_height = settings.close_button_height or 10
-    self.close_button = self.ui.Button(self.w - self.close_margin - self.close_button_width, self.close_margin,
-                                       self.close_button_width, self.close_button_height, 
-                                      {extensions = settings.close_button_extensions or {}, annotation = "Frame's close button"})
+    if self.closeable then
+        settings.annotation = "Frame's close button"
+        self:closeableNew(settings)
+    end
 
     self.draggable = settings.draggable or false
     self.drag_hot = false
@@ -132,16 +131,7 @@ function Frame:update(dt, parent)
     end
 
     -- Close
-    if self.close_button.pressed then
-        self.closing = true
-    end
-    if self.closing and self.close_button.released then
-        self.closed = true
-        self.closing = false
-    end
-    if self.selected and self.input:pressed('close') then
-        self.closed = true
-    end
+    if self.closeable then self:closeableUpdate(dt) end
 
     -- Drag
     if self.drag_hot and self.input:pressed('left-click') then
