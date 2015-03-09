@@ -11,27 +11,25 @@ function Closeable:closeableNew(settings)
     self.close_button_height = settings.close_button_height or 10
     self.close_button = self.ui.Button(self.w - self.close_margin - self.close_button_width, self.close_margin, self.close_button_width, self.close_button_height,
                                       {extensions = settings.close_button_extensions or {}, annotation = settings.annotation})
+    self:bind('escape', 'close')
 end
 
 function Closeable:closeableUpdate(dt)
     if self.close_button.pressed then
         self.closing = true
     end
-
     if self.closing and self.close_button.released then
         self.closed = true
         self.closing = false
     end
-
     if self.selected and self.input:pressed('close') then
         self.closed = true
     end
-
     self.close_button:update(dt, self)
 end
 
 function Closeable:closeableDraw()
-
+    self.close_button:draw()
 end
 
 return Closeable
