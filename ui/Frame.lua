@@ -25,16 +25,10 @@ function Frame:new(ui, x, y, w, h, settings)
         settings.annotation = "Frame's close button"
         self:closeableNew(settings)
     end
-
     self.draggable = settings.draggable or false
-    if self.draggable then 
-        self:draggableNew(settings) 
-    end
-
+    if self.draggable then self:draggableNew(settings) end
     self.resizable = settings.resizable or false
-    if self.resizable then 
-        self:resizableNew(settings) 
-    end
+    if self.resizable then self:resizableNew(settings) end
 
     self.elements = {}
     self.currently_focused_element = nil

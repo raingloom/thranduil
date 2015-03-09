@@ -1,8 +1,12 @@
 local ui_path = (...):sub(1, (...):find('/'))
 local Object = require(ui_path .. 'classic/classic')
 local Base = require(ui_path .. 'Base')
+local Draggable = require(ui_path .. 'Draggable')
+local Resizable = require(ui_path .. 'Resizable')
 local Slider = Object:extend('Slider')
 Slider:implement(Base)
+Slider:implement(Draggable)
+Slider:implement(Resizable)
 
 function Slider:new(ui, x, y, w, h, settings)
     self.ui = ui
@@ -12,6 +16,11 @@ function Slider:new(ui, x, y, w, h, settings)
     self:baseNew(x, y, w, h, settings)
     self:bind('left', 'move-left')
     self:bind('right', 'move-right')
+
+    self.draggable = settings.draggable or false
+    if self.draggable then self:draggableNew(settings) end
+    self.resizable = settings.resizable or false
+    if self.resizable then self:resizableNew(settings) end
 
     self.value = settings.value or 0
     self.value_interval = settings.value_interval or 1
@@ -24,6 +33,9 @@ end
 function Slider:update(dt, parent)
     self:basePreUpdate(dt, parent)
     local x, y = love.mouse.getPosition()
+
+    if self.resizable then self:resizableUpdate(dt) end
+    if self.draggable then self:draggableUpdate(dt) end
 
     -- Check for move left/right
     if self.selected and self.input:pressed('move-left') then

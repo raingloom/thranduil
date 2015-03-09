@@ -4,10 +4,10 @@ TestTheme = require 'TestTheme'
 function love.load()
     UI.registerEvents()
 
-    button = UI.Button(10, 10, 50, 50, {extensions = {TestTheme.Button}})
-    checkbox = UI.Checkbox(70, 10, 50, 50, {extensions = {TestTheme.Checkbox}})
+    button = UI.Button(10, 10, 50, 50, {extensions = {TestTheme.Button}, draggable = true, resizable = true})
+    checkbox = UI.Checkbox(70, 10, 50, 50, {extensions = {TestTheme.Checkbox}, draggable = true, resizable = true})
     frame = UI.Frame(130, 10, 100, 100, {extensions = {TestTheme.Frame}, draggable = true, closeable = true, close_button_extensions = {TestTheme.Button}, resizable = true})
-    slider = UI.Slider(10, 70, 110, 40, {extensions = {TestTheme.Slider}, value_interval = 10})
+    slider = UI.Slider(10, 70, 110, 40, {extensions = {TestTheme.Slider}, value_interval = 10, draggable = true, resizable = true})
 
     frame:addElement(UI.Button(10, 25, 25, 25, {extensions = {TestTheme.Button}}))
     frame:addElement(UI.Checkbox(40, 25, 25, 25, {extensions = {TestTheme.Checkbox}}))

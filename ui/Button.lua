@@ -2,7 +2,11 @@ local ui_path = (...):sub(1, (...):find('/'))
 local Object = require(ui_path .. 'classic/classic')
 local Base = require(ui_path .. 'Base')
 local Button = Object:extend('Button')
+local Draggable = require(ui_path .. 'Draggable')
+local Resizable = require(ui_path .. 'Resizable')
 Button:implement(Base)
+Button:implement(Draggable)
+Button:implement(Resizable)
 
 function Button:new(ui, x, y, w, h, settings)
     self.ui = ui
@@ -10,6 +14,11 @@ function Button:new(ui, x, y, w, h, settings)
     self.type = 'Button'
 
     self:baseNew(x, y, w, h, settings)
+
+    self.draggable = settings.draggable or false
+    if self.draggable then self:draggableNew(settings) end
+    self.resizable = settings.resizable or false
+    if self.resizable then self:resizableNew(settings) end
 end
 
 function Button:update(dt, parent)
@@ -20,6 +29,8 @@ function Button:update(dt, parent)
         end
     end
     self:basePreUpdate(dt, parent)
+    if self.resizable then self:resizableUpdate(dt) end
+    if self.draggable then self:draggableUpdate(dt) end
     self:basePostUpdate(dt)
 end
 
