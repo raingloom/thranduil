@@ -1,6 +1,17 @@
-v0.0.1
+v0.0.2
 
 ## CHANGELOG
+
+### v0.0.2
+
+#### Additions
+
+* Added Closeable mixin - [25eb072](https://github.com/adonaac/thranduil/commit/25eb0723ad88bf487683e7e733b3bc6006a3eda4) (2015-03-08 21:31:47)
+* Added Resizable mixin - [e8ae9eb](https://github.com/adonaac/thranduil/commit/e8ae9eb926894473d8a0aa625e166c9d4ad16580) (2015-03-08 22:06:35)
+* Added Draggable mixin - [175ac99](https://github.com/adonaac/thranduil/commit/175ac997876852c95f7cc775dcd152ab4b53ce99) (2015-03-08 22:23:01)
+* Added Base mixin - [80eeda9](https://github.com/adonaac/thranduil/commit/80eeda9e087887d2f47c8cee69290255d924c4e3) (2015-03-08 23:52:21)
+
+---
 
 ### v0.0.1
 
