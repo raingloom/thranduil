@@ -1,6 +1,6 @@
 local ui_path = tostring(...):sub(1, -3)
 local UI = {}
-require(ui_path .. 'utf8')
+require(ui_path .. 'utf8-l')
 UI.Object = require(ui_path .. 'classic/classic')
 UI.Input = require(ui_path .. 'Input/Input')
 
@@ -92,9 +92,9 @@ local Checkbox = require(ui_path .. 'Checkbox')
 UI.Checkbox = function(...) return Checkbox(UI, ...) end
 local Frame = require(ui_path .. 'Frame')
 UI.Frame = function(...) return Frame(UI, ...) end
+local Scrollarea = require(ui_path .. 'Scrollarea')
+UI.Scrollarea = function(...) return Scrollarea(UI, ...) end
 local Slider = require(ui_path .. 'Slider')
 UI.Slider = function(...) return Slider(UI, ...) end
-local Textinput = require(ui_path .. 'Textinput')
-UI.Textinput = function(...) return Textinput(UI, ...) end
 
 return UI

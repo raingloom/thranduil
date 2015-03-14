@@ -30,7 +30,7 @@ function Checkbox:update(dt, parent)
     self:basePreUpdate(dt, parent)
 
     if self.resizable then self:resizableUpdate(dt) end
-    if self.draggable then self:draggableUpdate(dt) end
+    if self.draggable then self:draggableUpdate(dt, parent) end
 
     -- Check for checked_enter
     if self.checked and not self.previous_checked then

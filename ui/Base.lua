@@ -37,10 +37,11 @@ end
 
 function Base:basePreUpdate(dt, parent)
     local x, y = love.mouse.getPosition()
-    if parent then self.x, self.y = parent.x + self.ix, parent.y + self.iy end
+    if parent and not self.draggable then self.x, self.y = parent.x + self.ix, parent.y + self.iy end
 
     -- Check for hot
-    if x >= self.x and x <= self.x + self.w and y >= self.y and y <= self.y + self.h then
+    if x >= self.x + (self.x_offset or 0) and x <= self.x + (self.x_offset or 0) + (self.area_width or self.w) and 
+       y >= self.y + (self.y_offset or 0) and y <= self.y + (self.y_offset or 0) + (self.area_height or self.h) then
         self.hot = true
     else self.hot = false end
 

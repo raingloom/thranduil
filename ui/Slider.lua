@@ -35,7 +35,7 @@ function Slider:update(dt, parent)
     local x, y = love.mouse.getPosition()
 
     if self.resizable then self:resizableUpdate(dt) end
-    if self.draggable then self:draggableUpdate(dt) end
+    if self.draggable then self:draggableUpdate(dt, parent) end
 
     -- Check for move left/right
     if self.selected and self.input:pressed('move-left') then

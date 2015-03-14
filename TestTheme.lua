@@ -44,6 +44,32 @@ TestTheme.Slider.draw = function(self)
     end
 end
 
+TestTheme.Scrollarea = {}
+TestTheme.Scrollarea.draw = function(self)
+    -- Draw scrollarea frame
+    love.graphics.setColor(32, 32, 32)
+    love.graphics.rectangle('fill', self.x, self.y, self.w, self.h)
+
+    if self.selected then 
+        love.graphics.setColor(128, 32, 32) 
+        love.graphics.rectangle('line', self.x + self.x_offset, self.y + self.y_offset, self.area_width, self.area_height)
+    end
+
+    -- Draw scrollbars background
+    love.graphics.setScissor()
+    love.graphics.setColor(16, 16, 16)
+    if self.show_scrollbars then
+        if self.vertical_scrolling then
+            love.graphics.rectangle('fill', self.x + self.x_offset + self.area_width, self.y + self.y_offset + self.scroll_button_height, 
+                                            self.scroll_button_width, self.area_height - 2*self.scroll_button_height)
+        end
+        if self.horizontal_scrolling then
+            love.graphics.rectangle('fill', self.x + self.x_offset + self.scroll_button_width, self.y + self.y_offset + self.area_height, 
+                                            self.area_width - 2*self.scroll_button_width, self.scroll_button_height)
+        end
+    end
+end
+
 TestTheme.Frame = {}
 TestTheme.Frame.draw = function(self)
     -- Draw frame
@@ -52,9 +78,9 @@ TestTheme.Frame.draw = function(self)
 
     -- Draw resize border
     if self.resizable then
-        love.graphics.setColor(32, 32, 32)
+        love.graphics.setColor(16, 16, 16)
         if self.resize_hot then love.graphics.setColor(48, 48, 48) end
-        if self.resizing then love.graphics.setColor(16, 16, 16) end
+        if self.resizing then love.graphics.setColor(40, 40, 40) end
         love.graphics.rectangle('fill', self.x, self.y, self.w, self.resize_margin)
         love.graphics.rectangle('fill', self.x, self.y + self.h - self.resize_margin, self.w, self.resize_margin)
         love.graphics.rectangle('fill', self.x, self.y, self.resize_margin, self.h)
@@ -63,10 +89,11 @@ TestTheme.Frame.draw = function(self)
 
     -- Draw drag bar
     if self.draggable then
-        love.graphics.setColor(32, 32, 32)
+        love.graphics.setColor(16, 16, 16)
         if self.drag_hot then love.graphics.setColor(48, 48, 48) end
-        if self.dragging then love.graphics.setColor(16, 16, 16) end
-        love.graphics.rectangle('fill', self.x, self.y, self.w, self.drag_margin)
+        if self.dragging then love.graphics.setColor(40, 40, 40) end
+        love.graphics.rectangle('fill', self.x + (self.resize_margin or 0), self.y + (self.resize_margin or 0), 
+                                self.w - 2*(self.resize_margin or 0), self.drag_margin)
     end
 
     if self.selected then 
