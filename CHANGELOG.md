@@ -1,6 +1,19 @@
-v0.0.3
+v0.0.4
 
 ## CHANGELOG
+
+### v0.0.4
+
+#### Additions
+
+* Added Container mixin - [b782638](https://github.com/adonaac/thranduil/commit/b78263827f020ff71f3df3275f8e031c1bbbeb5b) (2015-03-14 02:25:08)
+* Added Scrollarea object - [b782638](https://github.com/adonaac/thranduil/commit/b78263827f020ff71f3df3275f8e031c1bbbeb5b) (2015-03-14 02:25:08)
+
+#### Updates
+
+* Changed a brazillion things on other objects to accomodate for Scrollarea's creation - [b782638](https://github.com/adonaac/thranduil/commit/b78263827f020ff71f3df3275f8e031c1bbbeb5b) (2015-03-14 02:25:08)
+
+---
 
 ### v0.0.3
 
