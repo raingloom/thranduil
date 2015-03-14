@@ -9,8 +9,9 @@ function Resizable:resizableNew(settings)
     self.resize_margin = settings.resize_margin or 6
     self.min_width = settings.min_width or 20
     self.min_height = settings.min_height or self.h/5
-    self.resize_drag_x = nil
-    self.resize_drag_y = nil
+    self.resize_drag_x, self.resize_drag_y = nil, nil
+    self.resize_x, self.resize_y = 0, 0
+    self.resize_previous_mouse_position = nil
 end
 
 function Resizable:resizableUpdate(dt)
@@ -35,18 +36,23 @@ function Resizable:resizableUpdate(dt)
     end
 
     if self.resizing and self.input:down('left-click') then
-        local dx, dy = x - self.previous_mouse_position.x, y - self.previous_mouse_position.y
-        if self.resize_drag_x == -1 then self.x = self.x + dx end
-        if self.resize_drag_y == -1 then self.y = self.y + dy end
+        local dx, dy = x - self.resize_previous_mouse_position.x, y - self.resize_previous_mouse_position.y
+        if self.resize_drag_x == -1 then self.resize_x = self.resize_x + dx end
+        if self.resize_drag_y == -1 then self.resize_y = self.resize_y + dy end
         if self.resize_drag_x then self.w = math.max(self.w + self.resize_drag_x*dx, self.min_width) end
         if self.resize_drag_y then self.h = math.max(self.h + self.resize_drag_y*dy, self.min_height) end
     end
+
+    if not self.draggable then self.x, self.y = self.ix + self.resize_x, self.iy + self.resize_y end
 
     if self.resizing and self.input:released('left-click') then
         self.resizing = false
         self.resize_drag_x = nil
         self.resize_drag_y = nil
     end
+
+    -- Set previous frame state
+    self.resize_previous_mouse_position = {x = x, y = y}
 end
 
 return Resizable

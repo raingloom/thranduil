@@ -15,7 +15,7 @@ function Draggable:draggableNew(settings)
     self.only_drag_horizontally = settings.only_drag_horizontally
     self.only_drag_vertically = settings.only_drag_vertically
     self.previous_drag_hot = false
-    self.previous_mouse_position = nil
+    self.drag_previous_mouse_position = nil
 end
 
 function Draggable:draggableUpdate(dt, parent)
@@ -44,7 +44,7 @@ function Draggable:draggableUpdate(dt, parent)
     end
     -- Resizing has precedence over dragging
     if self.dragging and not self.resizing and self.input:down('left-click') then
-        local dx, dy = x - self.previous_mouse_position.x, y - self.previous_mouse_position.y
+        local dx, dy = x - self.drag_previous_mouse_position.x, y - self.drag_previous_mouse_position.y
         local parent_x, parent_y = 0, 0
         if parent then parent_x, parent_y = parent.x, parent.y end
         if self.only_drag_horizontally or (not self.only_drag_horizontally and not self.only_drag_vertically) then 
@@ -78,12 +78,12 @@ function Draggable:draggableUpdate(dt, parent)
         self.dragging = false
     end
 
-    if parent then self.x, self.y = parent.x + self.ix + self.drag_x, parent.y + self.iy + self.drag_y
-    else self.x, self.y = self.ix + self.drag_x, self.iy + self.drag_y end
+    if parent then self.x, self.y = parent.x + self.ix + self.drag_x + (self.resize_x or 0), parent.y + self.iy + self.drag_y + (self.resize_y or 0)
+    else self.x, self.y = self.ix + self.drag_x + (self.resize_x or 0), self.iy + self.drag_y + (self.resize_y or 0) end
 
     -- Set previous frame state
     self.previous_drag_hot = self.drag_hot
-    self.previous_mouse_position = {x = x, y = y}
+    self.drag_previous_mouse_position = {x = x, y = y}
 end
 
 function Draggable:setDragLimits(x_min, y_min, x_max, y_max)
