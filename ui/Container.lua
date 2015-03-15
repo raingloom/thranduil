@@ -11,6 +11,7 @@ function Container:containerNew(settings)
 
     self.elements = {}
     self.currently_focused_element = nil
+    self.any_selected = false
 end
 
 function Container:containerUpdate(dt, parent)
@@ -32,22 +33,27 @@ function Container:containerUpdate(dt, parent)
         end
     end
 
-    for _, element in ipairs(self.elements) do element:update(dt, self) end
-
     -- Unselect on escape
+    self.any_selected = false
     if self.selected then
-        local any_selected = false
         for _, element in ipairs(self.elements) do
-            if element.selected then any_selected = true end
+            if element.selected then self.any_selected = true end
         end
-        if any_selected and self.input:pressed('unselect') then
-            for _, element in ipairs(self.elements) do
-                element.selected = false
-                self.currently_focused_element = nil
+        if self.input:pressed('unselect') then self:unselect() end
+    end
+
+    -- Update children
+    if self.type == 'Scrollarea' then
+        for _, element in ipairs(self.elements) do
+            if element.inside_scroll_area then
+                element.inside_scroll_area = nil
+                element:update(dt, self)
             end
-        elseif not any_selected and self.input:pressed('unselect') then
-            self.selected = false
         end
+    else 
+        for _, element in ipairs(self.elements) do 
+            element:update(dt, self) 
+        end 
     end
 end
 
@@ -63,6 +69,7 @@ function Container:containerAddElement(element)
 end
 
 function Container:focusNext()
+    for _, element in ipairs(self.elements) do if element.any_selected then return end end
     for i, element in ipairs(self.elements) do 
         if element.selected then self.currently_focused_element = i end
         element.selected = false 
@@ -76,6 +83,7 @@ function Container:focusNext()
 end
 
 function Container:focusPrevious()
+    for _, element in ipairs(self.elements) do if element.any_selected then return end end
     for i, element in ipairs(self.elements) do 
         if element.selected then self.currently_focused_element = i end
         element.selected = false 
@@ -86,6 +94,18 @@ function Container:focusPrevious()
             self.currently_focused_element = #self.elements
         end
     else self.currently_focused_element = #self.elements end
+end
+
+function Container:unselect()
+    for _, element in ipairs(self.elements) do if element.any_selected then return end end
+    if self.any_selected then
+        for _, element in ipairs(self.elements) do
+            element.selected = false
+            self.currently_focused_element = nil
+        end
+    else
+        self.selected = false
+    end
 end
 
 return Container

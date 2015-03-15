@@ -13,12 +13,14 @@ function Button:new(ui, x, y, w, h, settings)
     self.id = self.ui.addToElementsList(self)
     self.type = 'Button'
 
-    self:baseNew(x, y, w, h, settings)
+    self:basePreNew(x, y, w, h, settings)
 
     self.draggable = settings.draggable or false
     if self.draggable then self:draggableNew(settings) end
     self.resizable = settings.resizable or false
     if self.resizable then self:resizableNew(settings) end
+
+    self:basePostNew()
 end
 
 function Button:update(dt, parent)
@@ -51,7 +53,7 @@ function Button:update(dt, parent)
         end
     end
     self:basePreUpdate(dt, parent)
-    if self.resizable then self:resizableUpdate(dt) end
+    if self.resizable then self:resizableUpdate(dt, parent) end
     if self.draggable then self:draggableUpdate(dt, parent) end
     self:basePostUpdate(dt)
 end

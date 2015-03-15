@@ -11,7 +11,7 @@ function Scrollarea:new(ui, x, y, w, h, settings)
     self.id = self.ui.addToElementsList(self)
     self.type = 'Scrollarea'
 
-    self:baseNew(x, y, w, h, settings)
+    self:basePreNew(x, y, w, h, settings)
     self:containerNew(settings)
     self:bind('left', 'scroll-left')
     self:bind('right', 'scroll-right')
@@ -19,6 +19,7 @@ function Scrollarea:new(ui, x, y, w, h, settings)
     self:bind('down', 'scroll-down')
 
     self.x_offset, self.y_offset = 0, 0
+    self.scroll_x, self.scroll_y = 0, 0
     self.scroll_button_width, self.scroll_button_height = settings.scroll_button_width or 15, settings.scroll_button_height or 15
     self.area_width, self.area_height = settings.area_width or self.w, settings.area_height or self.h
     self.show_scrollbars = settings.show_scrollbars
@@ -47,13 +48,19 @@ function Scrollarea:new(ui, x, y, w, h, settings)
         self.vertical_scrollbar_button.h = (self.area_height - 2*self.scroll_button_height)/(self.h/self.area_height)
         self.vertical_scrollbar_button.drag_margin = self.vertical_scrollbar_button.h
     end
+
+    self:basePostNew()
 end
 
 function Scrollarea:update(dt, parent)
     self:basePreUpdate(dt, parent)
     local x, y = love.mouse.getPosition()
+    local parent_x, parent_y = 0, 0
+    if parent then parent_x, parent_y = parent.x, parent.y end
 
-    -- Only update elements inside with one of its corners inside the scroll area
+    self:containerUpdate(dt, parent)
+
+    -- Only update elements with one of its corners inside the scroll area
     for _, element in ipairs(self.elements) do 
         local element_inside_scroll_area = false
         local corners = {
@@ -67,7 +74,7 @@ function Scrollarea:update(dt, parent)
                 break
             end
         end
-        if element_inside_scroll_area then element:update(dt, self) end
+        if element_inside_scroll_area then element.inside_scroll_area = true end
     end
 
     -- Scrolling
@@ -79,7 +86,6 @@ function Scrollarea:update(dt, parent)
             self.vertical_scrollbar_button.drag_margin = self.vertical_scrollbar_button.h
             local max_y = self.y + self.y_offset + self.area_height - self.scroll_button_height - self.vertical_scrollbar_button.h
             self.vertical_scrollbar_button:setDragLimits(nil, self.y + self.y_offset + self.scroll_button_height, nil, max_y)
-            self.vertical_scrollbar_button:update(dt, self)
 
             -- Define is the user is scrolling with the slider or through steps
             if self.vertical_scrollbar_button.pressed then self.mouse_scrolling_y = true end
@@ -91,7 +97,8 @@ function Scrollarea:update(dt, parent)
             -- If using the slider, change the scrollarea's values accordingly
             if self.mouse_scrolling_y then
                 self.y_offset = self.vertical_scrollbar_button.drag_y*(self.h - self.area_height)/(h - self.vertical_scrollbar_button.h)
-                self.y = self.iy - self.y_offset
+                self.scroll_y = -self.y_offset
+                for _, element in ipairs(self.elements) do element:update(0, self) end
             end
 
             -- Change the scrollbar's position according to the scrollarea's values
@@ -110,8 +117,6 @@ function Scrollarea:update(dt, parent)
             end
             self.last_drag_y = self.vertical_scrollbar_button.drag_y
 
-            self.vertical_scrollbar_top_button:update(dt, self)
-            self.vertical_scrollbar_bottom_button:update(dt, self)
             if self.vertical_scrollbar_top_button.released then self:scrollUp(self.vertical_step) end
             if self.vertical_scrollbar_bottom_button.released then self:scrollDown(self.vertical_step) end
         end
@@ -121,7 +126,6 @@ function Scrollarea:update(dt, parent)
             self.horizontal_scrollbar_button.w = math.floor(w/(self.w/w))
             local max_x = self.x + self.x_offset + self.area_width - self.scroll_button_width - self.horizontal_scrollbar_button.w
             self.horizontal_scrollbar_button:setDragLimits(self.x + self.x_offset + self.scroll_button_width, nil, max_x, nil)
-            self.horizontal_scrollbar_button:update(dt, self)
 
             -- Define if the user is scrolling with the slider or through steps
             if self.horizontal_scrollbar_button.pressed then self.mouse_scrolling_x = true end
@@ -133,7 +137,8 @@ function Scrollarea:update(dt, parent)
             -- If using the slider, change the scrollarea's values accordingly
             if self.mouse_scrolling_x then
                 self.x_offset = self.horizontal_scrollbar_button.drag_x*(self.w - self.area_width)/(w - self.horizontal_scrollbar_button.w)
-                self.x = self.ix - self.x_offset
+                self.scroll_x = -self.x_offset
+                for _, element in ipairs(self.elements) do element:update(0, self) end
             end
 
             -- Change the scrollbar's position according to the scrollarea's values
@@ -152,8 +157,6 @@ function Scrollarea:update(dt, parent)
             end
             self.last_drag_x = self.horizontal_scrollbar_button.drag_x
 
-            self.horizontal_scrollbar_left_button:update(dt, self)
-            self.horizontal_scrollbar_right_button:update(dt, self)
             if self.horizontal_scrollbar_left_button.released then self:scrollLeft(self.horizontal_step) end
             if self.horizontal_scrollbar_right_button.released then self:scrollRight(self.horizontal_step) end
         end
@@ -162,12 +165,9 @@ function Scrollarea:update(dt, parent)
             self.selected = true
         end
     end
+
     -- Scrolling with keyboard keys
-    local any_selected = false
-    for _, element in ipairs(self.elements) do
-        if element.selected then any_selected = true end
-    end
-    if self.selected and not any_selected then
+    if self.selected and not self.any_selected then
         if self.input:pressed('scroll-up') then 
             self.last_scroll_pressed_time = love.timer.getTime()
             self:scrollUp(self.vertical_step) 
@@ -202,7 +202,18 @@ function Scrollarea:update(dt, parent)
         end
     end
 
-    self:containerUpdate(dt, parent)
+    self.x, self.y = parent_x + self.ix + self.scroll_x, parent_y + self.iy + self.scroll_y
+    if self.vertical_scrolling then
+        self.vertical_scrollbar_button:update(dt, self)
+        self.vertical_scrollbar_top_button:update(dt, self)
+        self.vertical_scrollbar_bottom_button:update(dt, self)
+    end
+    if self.horizontal_scrolling then
+        self.horizontal_scrollbar_button:update(dt, self)
+        self.horizontal_scrollbar_left_button:update(dt, self)
+        self.horizontal_scrollbar_right_button:update(dt, self)
+    end
+
     self:basePostUpdate(dt)
 end
 
@@ -238,7 +249,7 @@ end
 function Scrollarea:scrollUp(step)
     if self.y_offset - step >= 0 then
         self.y_offset = self.y_offset - step
-        self.y = self.y + step
+        self.scroll_y = self.scroll_y + step
         for _, element in ipairs(self.elements) do element:update(0, self) end
     end
 end
@@ -246,7 +257,7 @@ end
 function Scrollarea:scrollDown(step)
     if self.y_offset + step <= self.h - self.area_height then
         self.y_offset = self.y_offset + step
-        self.y = self.y - step
+        self.scroll_y = self.scroll_y - step
         for _, element in ipairs(self.elements) do element:update(0, self) end
     end
 end
@@ -254,7 +265,7 @@ end
 function Scrollarea:scrollLeft(step)
     if self.x_offset - step >= 0 then
         self.x_offset = self.x_offset - step
-        self.x = self.x + step
+        self.scroll_x = self.scroll_x + step
         for _, element in ipairs(self.elements) do element:update(0, self) end
     end
 end
@@ -262,7 +273,7 @@ end
 function Scrollarea:scrollRight(step)
     if self.x_offset + step <= self.w - self.area_width then
         self.x_offset = self.x_offset + step
-        self.x = self.x - step
+        self.scroll_x = self.scroll_x - step
         for _, element in ipairs(self.elements) do element:update(0, self) end
     end
 end

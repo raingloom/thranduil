@@ -23,7 +23,7 @@ function Draggable:draggableUpdate(dt, parent)
 
     if self.draggable then
         -- Check for drag_hot
-        if self.hot and x >= self.x and x <= self.x + self.w and y >= self.y and y <= self.y + self.drag_margin then
+        if self.hot and x >= self.x and x <= self.x + self.w and y >= self.y + (self.resize_margin or 0) and y <= self.y + self.drag_margin + (self.resize_margin or 0) then
             self.drag_hot = true
         else self.drag_hot = false end
 

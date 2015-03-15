@@ -12,12 +12,14 @@ function Textarea:new(ui, x, y, w, h, settings)
     self.id = self.ui.addToElementsList(self)
     self.type = 'Textarea'
 
-    self:baseNew(x, y, w, h, settings)
+    self:basePreNew(x, y, w, h, settings)
 
     self.draggable = settings.draggable or false
     if self.draggable then self:draggableNew(settings) end
     self.resizable = settings.resizable or false
     if self.resizable then self:resizableNew(settings) end
+
+    self:basePostNew()
 end
 
 function Textarea:update(dt, parent)

@@ -13,7 +13,7 @@ function Slider:new(ui, x, y, w, h, settings)
     self.id = self.ui.addToElementsList(self)
     self.type = 'Slider'
 
-    self:baseNew(x, y, w, h, settings)
+    self:basePreNew(x, y, w, h, settings)
     self:bind('left', 'move-left')
     self:bind('right', 'move-right')
 
@@ -28,13 +28,15 @@ function Slider:new(ui, x, y, w, h, settings)
     self.min_value = settings.min_value or 0
     self.repeat_interval = settings.repeat_interval or 0.2
     self.slider_x = ((self.value - self.min_value)/(self.max_value - self.min_value))*(self.w) + self.x 
+
+    self:basePostNew()
 end
 
 function Slider:update(dt, parent)
     self:basePreUpdate(dt, parent)
     local x, y = love.mouse.getPosition()
 
-    if self.resizable then self:resizableUpdate(dt) end
+    if self.resizable then self:resizableUpdate(dt, parent) end
     if self.draggable then self:draggableUpdate(dt, parent) end
 
     -- Check for move left/right

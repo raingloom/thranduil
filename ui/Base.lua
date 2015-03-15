@@ -2,7 +2,7 @@ local ui_path = (...):sub(1, (...):find('/'))
 local Object = require(ui_path .. 'classic/classic')
 local Base = Object:extend('Base')
 
-function Base:baseNew(x, y, w, h, settings)
+function Base:basePreNew(x, y, w, h, settings)
     self.ix, self.iy = x, y
     self.x, self.y = x, y
     self.w, self.h = w, h
@@ -23,11 +23,6 @@ function Base:baseNew(x, y, w, h, settings)
     self.selected_enter = false
     self.selected_exit = false
 
-    -- Initialize extensions
-    for _, extension in ipairs(self.extensions or {}) do
-        if extension.new then extension.new(self) end
-    end
-
     self.pressing = false
     self.previous_hot = false
     self.previous_selected = false
@@ -35,13 +30,21 @@ function Base:baseNew(x, y, w, h, settings)
     self.previous_released = false
 end
 
+function Base:basePostNew()
+    -- Initialize extensions
+    for _, extension in ipairs(self.extensions or {}) do
+        if extension.new then extension.new(self) end
+    end
+end
+
 function Base:basePreUpdate(dt, parent)
     local x, y = love.mouse.getPosition()
-    if parent and not self.draggable then self.x, self.y = parent.x + self.ix, parent.y + self.iy end
+    if parent and not self.draggable and not self.resizable and self.type ~= 'Scrollarea' then self.x, self.y = parent.x + self.ix, parent.y + self.iy end
 
     -- Check for hot
-    if x >= self.x + (self.x_offset or 0) and x <= self.x + (self.x_offset or 0) + (self.area_width or self.w) and 
-       y >= self.y + (self.y_offset or 0) and y <= self.y + (self.y_offset or 0) + (self.area_height or self.h) then
+    local sax, say, aw, ah = self.x_offset or 0, self.y_offset or 0, self.area_width or self.w, self.area_height or self.h
+    if x >= self.x + sax and x <= self.x + sax + aw and 
+       y >= self.y + say and y <= self.y + say + ah then
         self.hot = true
     else self.hot = false end
 

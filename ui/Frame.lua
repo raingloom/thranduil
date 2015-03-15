@@ -17,7 +17,7 @@ function Frame:new(ui, x, y, w, h, settings)
     self.id = self.ui.addToElementsList(self)
     self.type = 'Frame'
 
-    self:baseNew(x, y, w, h, settings)
+    self:basePreNew(x, y, w, h, settings)
     self:containerNew(settings)
 
     self.draggable = settings.draggable or false
@@ -30,6 +30,8 @@ function Frame:new(ui, x, y, w, h, settings)
         settings.close_margin = self.resize_margin
         self:closeableNew(settings)
     end
+
+    self:basePostNew()
 end
 
 function Frame:update(dt, parent)
@@ -37,7 +39,7 @@ function Frame:update(dt, parent)
     self:basePreUpdate(dt, parent)
     local x, y = love.mouse.getPosition()
 
-    if self.resizable then self:resizableUpdate(dt) end
+    if self.resizable then self:resizableUpdate(dt, parent) end
     if self.draggable then self:draggableUpdate(dt, parent) end
     if self.closeable then self:closeableUpdate(dt) end
 

@@ -13,7 +13,7 @@ function Checkbox:new(ui, x, y, w, h, settings)
     self.id = self.ui.addToElementsList(self)
     self.type = 'Checkbox'
 
-    self:baseNew(x, y, w, h, settings)
+    self:basePreNew(x, y, w, h, settings)
 
     self.draggable = settings.draggable or false
     if self.draggable then self:draggableNew(settings) end
@@ -24,12 +24,14 @@ function Checkbox:new(ui, x, y, w, h, settings)
     self.checked_exit = false
     self.checked = false
     self.previous_checked = false
+
+    self:basePostNew()
 end
 
 function Checkbox:update(dt, parent)
     self:basePreUpdate(dt, parent)
 
-    if self.resizable then self:resizableUpdate(dt) end
+    if self.resizable then self:resizableUpdate(dt, parent) end
     if self.draggable then self:draggableUpdate(dt, parent) end
 
     -- Check for checked_enter
