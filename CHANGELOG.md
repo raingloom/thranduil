@@ -1,6 +1,15 @@
-v0.0.4
+v0.0.5
 
 ## CHANGELOG
+
+### v0.0.5
+
+
+#### Fixes
+
+* Fixed various issues regarding elements containing other elements - [d8a57ce](https://github.com/adonaac/thranduil/commit/d8a57ce62aa6c06007c9da5319efe2d4f78fdfe6) (2015-03-15 18:57:10)
+
+---
 
 ### v0.0.4
 
