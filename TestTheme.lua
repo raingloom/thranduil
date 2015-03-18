@@ -44,6 +44,32 @@ TestTheme.Slider.draw = function(self)
     end
 end
 
+TestTheme.Textarea = {}
+TestTheme.Textarea.draw = function(self)
+    -- Draw textinput background
+    love.graphics.setColor(24, 24, 24)
+    love.graphics.rectangle('fill', self.x, self.y, self.w, self.h)
+
+    -- Draw text
+    love.graphics.setColor(128, 128, 128)
+    self.text:draw()
+
+
+    if self.selected then 
+        -- Draw selection
+        love.graphics.setColor(192, 192, 192, 64)
+        for i, _ in ipairs(self.selection_positions) do
+            love.graphics.rectangle('fill', self.selection_positions[i].x, self.selection_positions[i].y, self.selection_sizes[i].w, self.selection_sizes[i].h)
+        end
+
+        love.graphics.setColor(128, 32, 32) 
+        love.graphics.rectangle('line', self.x, self.y, self.w, self.h)
+    end
+
+    -- Unset stuff
+    love.graphics.setColor(255, 255, 255, 255)
+end
+
 TestTheme.Scrollarea = {}
 TestTheme.Scrollarea.draw = function(self)
     -- Draw scrollarea frame

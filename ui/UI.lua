@@ -3,6 +3,7 @@ local UI = {}
 require(ui_path .. 'utf8-l')
 UI.Object = require(ui_path .. 'classic/classic')
 UI.Input = require(ui_path .. 'Input/Input')
+UI.Text = require(ui_path .. 'popo/Text')
 
 UI.keypressed = function(key) 
     for _, t in ipairs(UI.elements) do
@@ -96,5 +97,7 @@ local Scrollarea = require(ui_path .. 'Scrollarea')
 UI.Scrollarea = function(...) return Scrollarea(UI, ...) end
 local Slider = require(ui_path .. 'Slider')
 UI.Slider = function(...) return Slider(UI, ...) end
+local Textarea = require(ui_path .. 'Textarea')
+UI.Textarea = function(...) return Textarea(UI, ...) end
 
 return UI

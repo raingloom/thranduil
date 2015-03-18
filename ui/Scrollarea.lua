@@ -225,7 +225,6 @@ function Scrollarea:draw()
     self:baseDraw()
     love.graphics.setScissor(self.x + self.x_offset, self.y + self.y_offset, self.area_width, self.area_height) 
     self:containerDraw()
-
     love.graphics.setScissor()
 
     if self.show_scrollbars then

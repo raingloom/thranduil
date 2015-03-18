@@ -32,6 +32,12 @@ function love.load()
     local scrollarea_2 = UI.Scrollarea(10, 90, 400, 600, {extensions = {TestTheme.Scrollarea}, scrollbar_button_extensions = {TestTheme.Button}, area_width = 180, area_height = 280, show_scrollbars = true})
     scrollarea_2:addElement(UI.Frame(10, 10, 55, 70, {extensions = {TestTheme.Frame}, draggable = true, resizable = true}))
     frame_4:addElement(scrollarea_2)
+
+    scrollarea_3 = UI.Scrollarea(450, 10, 400, 400, {extensions = {TestTheme.Scrollarea}, scrollbar_button_extensions = {TestTheme.Button}, area_width = 325, area_height = 185, show_scrollbars = true})
+    scrollarea_3:addElement(UI.Textarea(10, 10, 380, 380, {extensions = {TestTheme.Textarea}}))
+
+    frame_5 = UI.Frame(240, 220, 200, 370, {extensions = {TestTheme.Frame}, draggable = true, drag_margin = 10, resizable = true, resize_margin = 5})
+    frame_5:addElement(UI.Textarea(10, 20, 180, 340, {extensions = {TestTheme.Textarea}, text_margin = 3}))
 end
 
 function love.update(dt)
@@ -41,6 +47,8 @@ function love.update(dt)
     frame:update(dt)
     scrollarea:update(dt)
     frame_4:update(dt)
+    --scrollarea_3:update(dt)
+    frame_5:update(dt)
 end
 
 function love.draw()
@@ -50,4 +58,6 @@ function love.draw()
     frame:draw()
     scrollarea:draw()
     frame_4:draw()
+    --scrollarea_3:draw()
+    frame_5:draw()
 end
