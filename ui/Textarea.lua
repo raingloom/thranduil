@@ -71,15 +71,78 @@ function Textarea:update(dt, parent)
     self.text:update(dt)
 
     -- Figure out selection/cursor position in pixels
-    local u, v, w
+    self.selection_positions = {}
+    self.selection_sizes = {}
     local line_string = self:getLineString(self:getIndexLine(self.index) or self:getIndexLine(self.index - 1))
-    local line_first_index = self:getIndexOfFirstInLine(self:getIndexLine(self.index)) or 1
-    local u = self.text.font:getWidth(line_string:utf8sub(1, self.index - line_first_index))
-    local v = self.text.font:getWidth(line_string:utf8sub(1, self.index - line_first_index + 1))
-    --if self.selection_index then v = self.font:getWidth(self.text.text:utf8sub(1, self.selection_index - 1)) end
-    if self.index == #self.text_table + 1 and not self.selection_index then v = v + self.text.font:getWidth('a') end
-    self.selection_positions = {{x = self.text_x + u, y = self.text_y + (self:getIndexLine(self.index) or self:getIndexLine(self.index - 1) or 0)*self.font:getHeight()}}
-    self.selection_sizes = {{w = v - u, h = self.font:getHeight()}}
+    local line_first_index = self:getIndexOfFirstInLine(self:getIndexLine(self.index)) or self:getIndexOfFirstInLine(self:getIndexLine(self.index - 1)) or 1
+    local line_last_index = self:getIndexOfLastInLine(self:getIndexLine(self.index)) or (line_first_index + #line_string - 1)
+    print(line_string, self.index, self.selection_index, line_first_index, line_last_index)
+    if not self.selection_index then
+        local u = self.text.font:getWidth(line_string:utf8sub(1, self.index - line_first_index))
+        local v = self.text.font:getWidth(line_string:utf8sub(1, self.index - line_first_index + 1))
+        if self.index == #self.text_table + 1 then v = v + self.text.font:getWidth('a') end
+        local h = self:getIndexLine(self.index) or self:getIndexLine(self.index - 1) or 0
+        table.insert(self.selection_positions, {x = self.text_x + u, y = self.text_y + h*self.font:getHeight()})
+        table.insert(self.selection_sizes, {w = v - u, h = self.font:getHeight()})
+    else
+        local index_line = self:getIndexLine(self.index) or self:getIndexLine(self.index - 1)
+        local selection_index_line = self:getIndexLine(self.selection_index - 1) or self:getIndexLine(self.selection_index)
+        if index_line ~= selection_index_line then
+            if self.index <= self.selection_index then
+                local n_mid_lines = selection_index_line - index_line - 1
+                -- Fill starting line
+                local u = self.text.font:getWidth(line_string:utf8sub(1, self.index - line_first_index))
+                local v = self.text.font:getWidth(line_string:utf8sub(1, line_last_index - line_first_index + 1))
+                local h = self:getIndexLine(self.index) or self:getIndexLine(self.index - 1) or 0
+                table.insert(self.selection_positions, {x = self.text_x + u, y = self.text_y + h*self.font:getHeight()})
+                table.insert(self.selection_sizes, {w = v - u, h = self.font:getHeight()})
+                -- Fill mid lines
+                for i = 1, n_mid_lines do
+                    local first_index_in_mid_line = self:getIndexOfFirstInLine(index_line + i)
+                    local mid_line_string = self:getLineString(self:getIndexLine(first_index_in_mid_line))
+                    table.insert(self.selection_positions, {x = self.text_x, y = self.text_y + (h+i)*self.font:getHeight()})
+                    table.insert(self.selection_sizes, {w = self.text.font:getWidth(mid_line_string), h = self.font:getHeight()})
+                end
+                -- Fill end line
+                local next_line_string = self:getLineString(self:getIndexLine(self.selection_index) or self:getIndexLine(self.selection_index - 1))
+                local next_line_first_index = self:getIndexOfFirstInLine(self:getIndexLine(self.selection_index - 1)) or self:getIndexOfFirstInLine(self:getIndexLine(self.selection_index - 2)) or 1
+                local z = self.text.font:getWidth(next_line_string:utf8sub(1, self.selection_index - next_line_first_index))
+                local h2 = self:getIndexLine(self.selection_index - 1) or self:getIndexLine(self.selection_index - 2) or 0
+                table.insert(self.selection_positions, {x = self.text_x, y = self.text_y + h2*self.font:getHeight()})
+                table.insert(self.selection_sizes, {w = z, h = self.font:getHeight()})
+            else
+                local n_mid_lines = index_line - selection_index_line - 1
+                -- Fill starting line
+                local z = self.text.font:getWidth(line_string:utf8sub(1, self.index - line_first_index))
+                local h = self:getIndexLine(self.index) or self:getIndexLine(self.index - 1) or 0
+                table.insert(self.selection_positions, {x = self.text_x, y = self.text_y + h*self.font:getHeight()})
+                table.insert(self.selection_sizes, {w = z, h = self.font:getHeight()})
+                -- Fill mid lines
+                for i = 1, n_mid_lines do
+                    local first_index_in_mid_line = self:getIndexOfFirstInLine(index_line - i)
+                    local mid_line_string = self:getLineString(self:getIndexLine(first_index_in_mid_line))
+                    table.insert(self.selection_positions, {x = self.text_x, y = self.text_y + (h-i)*self.font:getHeight()})
+                    table.insert(self.selection_sizes, {w = self.text.font:getWidth(mid_line_string), h = self.font:getHeight()})
+                end
+                -- Fill end line
+                local previous_line_string = self:getLineString(self:getIndexLine(self.selection_index) or self:getIndexLine(self.selection_index - 1))
+                local previous_line_first_index = self:getIndexOfFirstInLine(self:getIndexLine(self.selection_index - 1)) or self:getIndexOfFirstInLine(self:getIndexLine(self.selection_index - 2)) or 1
+                local previous_line_last_index = self:getIndexOfLastInLine(self:getIndexLine(self.selection_index - 1)) or self:getIndexOfLastInLine(self:getIndexLine(self.selection_index - 2)) or 1
+                local u = self.text.font:getWidth(previous_line_string:utf8sub(1, self.selection_index - previous_line_first_index))
+                local v = self.text.font:getWidth(previous_line_string:utf8sub(1, previous_line_last_index + previous_line_first_index + 1))
+                local h2 = self:getIndexLine(self.selection_index) or self:getIndexLine(self.selection_index - 1) or 0
+                table.insert(self.selection_positions, {x = self.text_x + u, y = self.text_y + h2*self.font:getHeight()})
+                table.insert(self.selection_sizes, {w = v - u, h = self.font:getHeight()})
+
+            end
+        else
+            local u = self.text.font:getWidth(line_string:utf8sub(1, self.index - line_first_index))
+            local v = self.text.font:getWidth(line_string:utf8sub(1, self.selection_index - line_first_index))
+            local h = self:getIndexLine(self.index) or self:getIndexLine(self.index - 1) or 0
+            table.insert(self.selection_positions, {x = self.text_x + u, y = self.text_y + h*self.font:getHeight()})
+            table.insert(self.selection_sizes, {w = v - u, h = self.font:getHeight()})
+        end
+    end
 
     -- Everything up has to happen every frame if the textarea is selected or not
     if not self.selected then return end
@@ -231,6 +294,12 @@ function Textarea:getIndexOfFirstInLine(line)
     end
 end
 
+function Textarea:getIndexOfLastInLine(line)
+    for i, c in ipairs(self.text.characters) do
+        if c.line ~= line and self.text.characters[i-1] and self.text.characters[i-1].line == line then return i-1 end
+    end
+end
+
 function Textarea:getMaxLines()
     local n_lines = 0
     for i, c in ipairs(self.text.characters) do n_lines = c.line + 1 end
@@ -249,20 +318,27 @@ function Textarea:deleteSelected()
 end
 
 function Textarea:moveLeft()
+    if self.selection_index then self.index = self.selection_index end
     self.index = self.index - 1
     self.selection_index = nil
     if self.index < 1 then self.index = 1 end
 end
 
 function Textarea:moveRight()
+    if self.selection_index then self.index = self.selection_index - 1 end
     self.index = self.index + 1
     self.selection_index = nil
     if self.index > #self.text_table + 1 then self.index = #self.text_table + 1 end
 end
 
 function Textarea:moveUp()
+    if self.selection_index then self.index = self.selection_index end
     local index_line = self:getIndexLine(self.index) or self:getIndexLine(self.index - 1)
-    if index_line == 0 then self.index = 1; return end
+    if index_line == 0 then 
+        self.index = 1
+        self.selection_index = nil
+        return 
+    end
     local line_first_index = self:getIndexOfFirstInLine(self:getIndexLine(self.index)) or 1
     local w = self.text.font:getWidth(self:getLineString(index_line):utf8sub(1, self.index - line_first_index))
     local string = ''
@@ -270,14 +346,24 @@ function Textarea:moveUp()
         if c.line == index_line - 1 then
             string = string .. c.character
             local lw = self.text.font:getWidth(string)
-            if lw >= w then self.index = i + 1; return end
+            if lw >= w then 
+                if w == 0 then self.index = i
+                else self.index = i + 1 end
+                self.selection_index = nil
+                return 
+            end
         end
     end
 end
 
 function Textarea:moveDown()
+    if self.selection_index then self.index = self.selection_index end
     local index_line = self:getIndexLine(self.index) or self:getIndexLine(self.index - 1)
-    if index_line == self:getMaxLines() - 1 then self.index = #self.text.characters; return end
+    if index_line == self:getMaxLines() - 1 then 
+        self.index = #self.text.characters
+        self.selection_index = nil
+        return 
+    end
     local line_first_index = self:getIndexOfFirstInLine(self:getIndexLine(self.index)) or 1
     local w = self.text.font:getWidth(self:getLineString(index_line):utf8sub(1, self.index - line_first_index))
     local string = ''
@@ -285,9 +371,36 @@ function Textarea:moveDown()
         if c.line == index_line + 1 then
             string = string .. c.character
             local lw = self.text.font:getWidth(string)
-            if lw >= w then self.index = i + 1; return end
+            if lw >= w then 
+                if w == 0 then self.index = i
+                else self.index = i + 1 end
+                self.selection_index = nil
+                return 
+            end
         end
     end
+    self.index = #self.text.characters
+    self.selection_index = nil
+end
+
+function Textarea:selectLeft()
+    if not self.selection_index then self.selection_index = self.index - 1
+    else self.selection_index = self.selection_index - 1 end
+    if self.selection_index < 1 then self.selection_index = 1 end
+end
+
+function Textarea:selectRight()
+    if not self.selection_index then self.selection_index = self.index + 1
+    else self.selection_index = self.selection_index + 1 end
+    if self.selection_index > #self.text_table + 1 then self.selection_index = #self.text_table + 1 end
+end
+
+function Textarea:selectUp()
+    
+end
+
+function Textarea:selectDown()
+    
 end
 
 return Textarea
