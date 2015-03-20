@@ -1,6 +1,14 @@
-v0.0.5
+v0.0.6
 
 ## CHANGELOG
+
+### v0.0.6
+
+#### Additions
+
+* Added Textarea - [fdb8500](https://github.com/adonaac/thranduil/commit/fdb8500130be49dc8d3b6ec655b453dade977fe4) (2015-03-20 05:05:15)
+
+---
 
 ### v0.0.5
 
