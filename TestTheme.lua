@@ -54,7 +54,6 @@ TestTheme.Textarea.draw = function(self)
     love.graphics.setColor(128, 128, 128)
     self.text:draw()
 
-
     if self.selected then 
         -- Draw selection
         love.graphics.setColor(192, 192, 192, 64)

@@ -29,6 +29,7 @@ function Textarea:new(ui, x, y, w, h, settings)
     self.single_line = settings.single_line
     self.text_margin = settings.text_margin or 5
     self.wrap_width = settings.wrap_width or (self.w - 4*self.text_margin)
+    self.text_add_x = 0
     self.text_x, self.text_y = self.x + self.text_margin, self.y + self.text_margin
     self.text_ix, self.text_iy = self.text_x, self.text_y
     self.text_base_x, self.text_base_y = self.text_x, self.text_y
@@ -45,8 +46,10 @@ function Textarea:new(ui, x, y, w, h, settings)
     self.mouse_pressed_time = false
     self.last_mouse_pressed_time = false
 
-    self.text_settings = {font = self.font, wrap_width = self.wrap_width, justify = true}
+    if self.single_line then self.text_settings = {font = self.font}
+    else self.text_settings = {font = self.font, wrap_width = self.wrap_width} end
     self.text = self.ui.Text(self.text_x, self.text_y, self:join(), self.text_settings) 
+    if self.single_line then self.h = self.text.font:getHeight() + 4*self.text_margin end
 
     self:basePostNew()
 end
@@ -54,7 +57,7 @@ end
 function Textarea:update(dt, parent)
     self:basePreUpdate(dt, parent)
     if parent then self.text_base_x, self.text_base_y = parent.x + self.text_ix, parent.y + self.text_iy end
-    self.text_x, self.text_y = self.text_base_x + (self.text_margin or 0), self.text_base_y + (self.text_margin or 0)
+    self.text_x, self.text_y = self.text_base_x + (self.text_margin or 0) + self.text_add_x, self.text_base_y + (self.text_margin or 0)
     self.text.x, self.text.y = self.text_x, self.text_y
     self.text:update(dt)
 
@@ -137,6 +140,29 @@ function Textarea:update(dt, parent)
         end
     end
 
+    -- Single line text scrolling
+    local w = self.w - 2*self.text_margin
+    if self.single_line and #self.selection_positions > 0 then
+        if not self.selection_index then
+            local x1, y1 = self.selection_positions[1].x - self.text_x, self.selection_positions[1].y
+            local x2, y2 = x1 + self.selection_sizes[1].w, y1 + self.selection_sizes[1].h
+            if x2 > w - self.text_add_x then
+                self.text_add_x = self.text_add_x - w/2
+            elseif x1 < -self.text_add_x then
+                self.text_add_x = self.text_add_x + w/2
+            end
+        else
+            local x1, y1 = self.selection_positions[1].x - self.text_x, self.selection_positions[1].y
+            local n = #self.selection_positions
+            local x2, y2 = self.selection_positions[n].x - self.text_x + self.selection_sizes[n].w, self.selection_positions[n].y + self.selection_sizes[n].h
+            if x2 > w - self.text_add_x then
+                self.text_add_x = self.text_add_x - w/2
+            elseif x2 < -self.text_add_x then
+                self.text_add_x = self.text_add_x + w/2
+            end
+        end
+    end
+
     -- Everything up has to happen every frame if the textarea is selected or not
     if not self.selected then return end
     -- Everything down has to happen only if the textarea is selected
@@ -178,7 +204,6 @@ function Textarea:update(dt, parent)
     end
     if self.mouse_all_selected then self:selectAll() end
 
-    
     -- Move cursor left
     if not self.input:down('lshift') and self.input:pressed('move-left') then
         self.key_pressed_time = love.timer.getTime()

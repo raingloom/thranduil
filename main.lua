@@ -37,7 +37,8 @@ function love.load()
     scrollarea_3:addElement(UI.Textarea(10, 10, 380, 380, {extensions = {TestTheme.Textarea}}))
 
     frame_5 = UI.Frame(240, 220, 200, 370, {extensions = {TestTheme.Frame}, draggable = true, drag_margin = 10, resizable = true, resize_margin = 5})
-    frame_5:addElement(UI.Textarea(10, 20, 180, 340, {extensions = {TestTheme.Textarea}, text_margin = 3, font = love.graphics.newFont('OpenSans-Regular.ttf', 14)}))
+    frame_5:addElement(UI.Textarea(10, 20, 180, 305, {extensions = {TestTheme.Textarea}, text_margin = 3, font = love.graphics.newFont('OpenSans-Regular.ttf', 14)}))
+    frame_5:addElement(UI.Textarea(10, 330, 180, 30, {extensions = {TestTheme.Textarea}, text_margin = 3, font = love.graphics.newFont('OpenSans-Regular.ttf', 14), single_line = true}))
 end
 
 function love.update(dt)
