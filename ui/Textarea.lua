@@ -141,6 +141,44 @@ function Textarea:update(dt, parent)
     if not self.selected then return end
     -- Everything down has to happen only if the textarea is selected
     
+    -- Cursor selection with mouse
+    local mx, my = love.mouse.getPosition()
+    if self.hot and self.input:pressed('left-click') then
+        self.selection_index = false
+        self.mouse_all_selected = false
+        self.mouse_pressing = true
+        for i, c in ipairs(self.text.characters) do
+            local line_string = self:getLineString(c.line)
+            local line_first_index = self:getIndexOfFirstInLine(c.line)
+            local x, y = self.text_x + self.text.font:getWidth(line_string:utf8sub(1, i - line_first_index)), self.text_y + c.line*self.text.font:getHeight()
+            local w, h = self.text.font:getWidth(c.character), self.text.font:getHeight()
+            if mx >= x and mx <= x + w and my >= y and my <= y + h then self.index = i; break end
+        end
+    end
+    if not self.mouse_all_selected and self.mouse_pressing and self.input:down('left-click') then
+        for i, c in ipairs(self.text.characters) do
+            local line_string = self:getLineString(c.line)
+            local line_first_index = self:getIndexOfFirstInLine(c.line)
+            local x, y = self.text_x + self.text.font:getWidth(line_string:utf8sub(1, i - line_first_index)), self.text_y + c.line*self.text.font:getHeight()
+            local w, h = self.text.font:getWidth(c.character), self.text.font:getHeight()
+            if mx >= x and mx <= x + w and my >= y and my <= y + h then self.selection_index = i + 1; break end
+            if self.index == self.selection_index then self.selection_index = nil end
+        end
+    end
+    if self.mouse_pressing and self.input:released('left-click') then
+        self.mouse_pressing = false
+    end
+
+    -- Cursor double click all selection
+    if self.hot and self.input:pressed('left-click') then
+        self.mouse_pressed_time = love.timer.getTime()
+        if self.last_mouse_pressed_time then
+            if self.mouse_pressed_time - self.last_mouse_pressed_time < 0.3 then self.mouse_all_selected = true end
+        end
+    end
+    if self.mouse_all_selected then self:selectAll() end
+
+    
     -- Move cursor left
     if not self.input:down('lshift') and self.input:pressed('move-left') then
         self.key_pressed_time = love.timer.getTime()
@@ -245,6 +283,8 @@ function Textarea:update(dt, parent)
     if self.input:pressed('paste') then self:paste() end
 
     self:basePostUpdate(dt)
+
+    self.last_mouse_pressed_time = self.mouse_pressed_time
 end
 
 function Textarea:draw()
@@ -259,6 +299,7 @@ end
 
 function Textarea:textinput(text)
     if not self.selected then return end
+    self:deleteSelected()
     table.insert(self.text_table, self.index, text)
     self.index = self.index + 1
     self:updateText()
@@ -304,6 +345,7 @@ function Textarea:getMaxLines()
 end
 
 function Textarea:moveLeft()
+    self.mouse_all_selected = false
     if self.selection_index then self.index = self.selection_index end
     self.index = self.index - 1
     self.selection_index = nil
@@ -311,6 +353,7 @@ function Textarea:moveLeft()
 end
 
 function Textarea:moveRight()
+    self.mouse_all_selected = false
     if self.selection_index then self.index = self.selection_index - 1 end
     self.index = self.index + 1
     self.selection_index = nil
@@ -318,6 +361,7 @@ function Textarea:moveRight()
 end
 
 function Textarea:moveUp()
+    self.mouse_all_selected = false
     if self.selection_index then self.index = self.selection_index end
     local index_line = self:getIndexLine(self.index) or self:getIndexLine(self.index - 1)
     if index_line == 0 then 
@@ -343,6 +387,7 @@ function Textarea:moveUp()
 end
 
 function Textarea:moveDown()
+    self.mouse_all_selected = false
     if self.selection_index then self.index = self.selection_index end
     local index_line = self:getIndexLine(self.index) or self:getIndexLine(self.index - 1)
     if index_line == self:getMaxLines() - 1 then 
@@ -370,18 +415,21 @@ function Textarea:moveDown()
 end
 
 function Textarea:selectLeft()
+    self.mouse_all_selected = false
     if not self.selection_index then self.selection_index = self.index - 1
     else self.selection_index = self.selection_index - 1 end
     if self.selection_index < 1 then self.selection_index = 1 end
 end
 
 function Textarea:selectRight()
+    self.mouse_all_selected = false
     if not self.selection_index then self.selection_index = self.index + 1
     else self.selection_index = self.selection_index + 1 end
     if self.selection_index > #self.text_table + 1 then self.selection_index = #self.text_table + 1 end
 end
 
 function Textarea:selectUp()
+    self.mouse_all_selected = false
     if not self.selection_index then self.selection_index = self.index end
     local index_line = self:getIndexLine(self.selection_index) or self:getIndexLine(self.selection_index - 1)
     if index_line == 0 then 
@@ -405,6 +453,7 @@ function Textarea:selectUp()
 end
 
 function Textarea:selectDown()
+    self.mouse_all_selected = false
     if not self.selection_index then self.selection_index = self.index + 1 end
     local index_line = self:getIndexLine(self.selection_index) or self:getIndexLine(self.selection_index - 1)
     if index_line == self:getMaxLines() - 1 then 
@@ -436,11 +485,13 @@ end
 function Textarea:first()
     self.index = 1
     self.selection_index = nil
+    self.mouse_all_selected = false
 end
 
 function Textarea:last()
     self.index = #self.text.characters + 1
     self.selection_index = nil
+    self.mouse_all_selected = false
 end
 
 function Textarea:deleteSelected()
@@ -452,6 +503,7 @@ function Textarea:deleteSelected()
     for i = max, min, -1 do table.remove(self.text_table, i) end
     self.index = min
     self.selection_index = nil
+    self.mouse_all_selected = false
 end
 
 function Textarea:backspace()
