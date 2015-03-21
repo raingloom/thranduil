@@ -1,6 +1,16 @@
-v0.1.0
+v0.1.1
 
 ## CHANGELOG
+
+### v0.1.1
+
+#### Additions
+
+* Added Chatbox example - [50488fd](https://github.com/adonaac/thranduil/commit/50488fdfa4ba5a157853bb81c0555b7a4f37af0f) (2015-03-21 20:35:31)
+* Added dynamic_scroll_set for Scrollareas - [50488fd](https://github.com/adonaac/thranduil/commit/50488fdfa4ba5a157853bb81c0555b7a4f37af0f) (2015-03-21 20:35:31)
+* Added editing_locked for Textareas - [50488fd](https://github.com/adonaac/thranduil/commit/50488fdfa4ba5a157853bb81c0555b7a4f37af0f) (2015-03-21 20:35:31)
+
+---
 
 ### v0.1.0
 
