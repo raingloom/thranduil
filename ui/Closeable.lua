@@ -22,11 +22,7 @@ function Closeable:closeableUpdate(dt)
         self.closed = true
         self.closing = false
     end
-    local any_selected = false
-    for _, element in ipairs(self.elements) do
-        if element.selected then any_selected = true end
-    end
-    if self.selected and not any_selected and self.input:pressed('close') then
+    if self.selected and not self.any_selected and self.input:pressed('close') then
         self.closed = true
     end
     self.close_button:update(dt, self)

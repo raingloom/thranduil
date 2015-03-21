@@ -55,8 +55,7 @@ function Frame:draw()
 end
 
 function Frame:addElement(element)
-    self:containerAddElement(element)
+    return self:containerAddElement(element)
 end
 
 return Frame
-

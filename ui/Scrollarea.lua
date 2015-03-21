@@ -242,7 +242,7 @@ function Scrollarea:draw()
 end
 
 function Scrollarea:addElement(element)
-    self:containerAddElement(element)
+    return self:containerAddElement(element)
 end
 
 function Scrollarea:scrollUp(step)

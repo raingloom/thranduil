@@ -48,7 +48,7 @@ function love.update(dt)
     frame:update(dt)
     scrollarea:update(dt)
     frame_4:update(dt)
-    --scrollarea_3:update(dt)
+    scrollarea_3:update(dt)
     frame_5:update(dt)
 end
 
@@ -59,6 +59,6 @@ function love.draw()
     frame:draw()
     scrollarea:draw()
     frame_4:draw()
-    --scrollarea_3:draw()
+    scrollarea_3:draw()
     frame_5:draw()
 end

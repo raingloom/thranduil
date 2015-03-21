@@ -6,12 +6,15 @@ function Resizable:resizableNew(settings)
     local settings = settings or {}
     self.resizing = false
     self.resize_hot = false
+    self.resize_enter = false
+    self.resize_exit = false
     self.resize_margin = settings.resize_margin or 6
     self.min_width = settings.min_width or 20
     self.min_height = settings.min_height or self.h/5
     self.resize_drag_x, self.resize_drag_y = nil, nil
     self.resize_x, self.resize_y = 0, 0
     self.resize_previous_mouse_position = nil
+    self.previous_resize_hot = false
 end
 
 function Resizable:resizableUpdate(dt, parent)
@@ -26,6 +29,16 @@ function Resizable:resizableUpdate(dt, parent)
            (x >= self.x + sax and x <= self.x + sax + aw and y >= self.y + say + ah - self.resize_margin and y <= self.y + say + ah) then
             self.resize_hot = true 
         else self.resize_hot = false end
+
+        -- Check for resize_enter
+        if self.resize_hot and not self.previous_resize_hot then
+            self.resize_enter = true
+        else self.resize_enter = false end
+
+        -- Check for resize_exit
+        if not self.resize_hot and self.previous_resize_hot then
+            self.resize_exit = true
+        else self.resize_exit = false end
     end
 
     if self.resize_hot and self.input:pressed('left-click') then
@@ -56,6 +69,7 @@ function Resizable:resizableUpdate(dt, parent)
     end
 
     -- Set previous frame state
+    self.previous_resize_hot = self.resize_hot
     self.resize_previous_mouse_position = {x = x, y = y}
 end
 
