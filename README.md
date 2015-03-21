@@ -512,13 +512,13 @@ end
 
 ## Mixins
 
-Internally each UI element is composed of multiple mixins (reusable code that's common between elements) as well as specific code that makes that element work. For the purposes of saving documentation space by not repeating the same attributes and methods over multiple objects, I've listed those mixins here, but when using the UI library you probably won't need to care about them. 
+Internally each UI element is composed of multiple mixins (reusable code that's common between elements) as well as specific code that makes that element work. For the purposes of saving documentation space by not repeating the same attributes and methods over multiple objects, I've listed those mixins here, but when using the UI library you probably won't need to care about them. On the [Elements](#elements) section, when an UI element implements Base, Draggable and Resizable for instance, it means that it contains all the attributes and methods of those 3 mixins.
 
-On the [Elements](#elements) section, when an UI element implements Base, Draggable and Resizable for instance, it means that it contains all the attributes and methods of those 3 mixins.
+---
 
 ### Base
 
-Base mixin that gives core functionality to all UI elements...
+Base mixin that gives core functionality to all UI elements.
 
 #### Attributes
 
@@ -537,8 +537,6 @@ Base mixin that gives core functionality to all UI elements...
 | selected_exit | true on the frame the element exists selection |
 
 #### Methods
-
----
 
 **`bind(key, action):`** binds a key to a button action. Current actions are:
 
@@ -569,6 +567,8 @@ Makes it so that a UI element has a close button and that it can be closed.
 | close_button_extensions | the extensions to be used for the close button | |
 | close_button | a reference to the close button | |
 
+---
+
 ### Container
 
 Adds the ability for an UI element to contain other UI elements.
@@ -583,8 +583,6 @@ Adds the ability for an UI element to contain other UI elements.
 
 #### Methods
 
----
-
 **`bind(key, action):`** binds a key to a button action. Current actions are:
 
 | Action | Default Key | Description |
@@ -592,8 +590,6 @@ Adds the ability for an UI element to contain other UI elements.
 | focus-next | tab | selects the next child to focus on (sets its `.selected` attribute to true) |
 | previous-modifier | lshift | modifier key to be pressed with `focus-next` to focus on the previous child |
 | unselect | escape | unselects the currently selected child |
-
----
 
 **`focusNext():`** mimicks a `focus-next` action and focuses on the next child
 
@@ -624,14 +620,14 @@ Adds the ability for an UI element to contain other UI elements.
 
 #### Methods
 
----
-
 **`setDragLimits(x_min, y_min, x_max, y_max):`** sets this element's drag limits
 
 ```lua
 -- Makes it so that the element can't be dragged below x = 100 and above x = 400
 element:setDragLimits(100, nil, 400, nil)
 ```
+
+---
 
 ### Resizable
 
