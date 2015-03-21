@@ -25,24 +25,33 @@ end
 * [Elements](#elements)
   * [Button](#button)
     * [Methods](#methods)
-    * [Basic button drawing](#basic-button-drawing)
-  * [Frame](#frame)
+  * [Checkbox](#checkbox)
+    * [Attributes](#attributes)
     * [Methods](#methods-1)
-    * [Basic frame drawing](#basic-frame-drawing)
+  * [Frame](#frame)
+    * [Methods](#methods-2)
+  * [Scrollarea](#scrollarea)
+    * [Attributes](#attributes-1)
+    * [Methods](#methods-3)
+  * [Slider](#slider)
+    * [Attributes](#attributes-2)
+    * [Methods](#methods-4)
+  * [Textarea](#textarea)
+    * [Methods](#methods-5)
 * [Mixins](#mixins)
   * [Base](#base)
-    * [Attributes](#base-attributes)
-    * [Methods](#base-methods)
+    * [Attributes](#attributes-3)
+    * [Methods](#methods-6)
   * [Closeable](#closeable)
-    * [Attributes](#closeable-attributes)
+    * [Attributes](#attributes-4)
   * [Container](#container)
-    * [Attributes](#container-attributes)
-    * [Methods](#container-methods)
+    * [Attributes](#attributes-5)
+    * [Methods](#methods-7)
   * [Draggable](#draggable)
-    * [Attributes](#draggable-attributes)
-    * [Methods](#draggable-methods)
+    * [Attributes](#attributes-6)
+    * [Methods](#methods-8)
   * [Resizable](#resizable)
-    * [Attributes](#resizable-attributes)
+    * [Attributes](#attributes-7)
 * [Extensions](#extensions)
 
 ## Introduction
@@ -223,6 +232,141 @@ scrollarea = UI.Scrollarea(0, 0, 200, 200, {area_width = 100, area_height = 100,
 **`scrollUp(step):`** mimicks a `scroll-up` action and scrolls by `step` pixels
 
 **`scrollDown(step):`** mimicks a `scroll-down` action and scrolls by `step` pixels
+
+---
+
+### Slider
+
+A slider is a... slider. Like, you can press on it and depending on where you pressed it corresponds to some value within a min/max limit. Implements:
+
+* [Base](#base)
+* [Draggable](#draggable)
+* [Resizable](#resizable)
+
+#### Attributes
+
+| Attribute | Description | Default Value |
+| :-------- | :---------- | :------------ |
+| value | the current slider value | 0 |
+| min_value | the minimum slider value | 0 |
+| max_value | the maximum slider value | self.w |
+| value_interval | minimum value between each slider value jump (if it's 5 then the slider can only have values 5, 10, 15, ...) | 1 |
+| slider_x | slider value's x position in pixels | |
+
+#### Methods
+
+---
+
+**`new(x, y, w, h, settings):`** creates a new slider. The settings table is optional and default values will be used in case some attributes are omitted.
+
+```lua
+slider = UI.Slider(0, 0, 200, 20, {value_interval = 10})
+```
+
+---
+
+**`bind(key, action):`** binds a key to a button action. Current actions are:
+
+| Action | Default Key | Description |
+| :----- | :---------- | :---------- |
+| move-left | left | decreases the slider's value once |
+| move-right | right | increases the slider's value once |
+
+---
+
+**`moveLeft():`** mimicks a `move-left` action and decreases the slider's value once
+
+**`moveRight():`** mimicks a `move-right` action and increases the slider's value once
+
+---
+
+### Textarea
+
+A textarea is an area that can contain text and be editted. It uses [Popo](https://github.com/adonaac/popo) internally for text operations, displaying and so on. Implements: 
+
+* [Base](#base)
+
+#### Attributes
+
+| Attribute | Description | Default Value |
+| :-------- | :---------- | :------------ |
+| single_line | if the text area allows only one line of input | false |
+| font | the font to be used | default LÖVE font |
+| text | reference to the Popo text object | |
+| text_x, y | text's x, y positions | self.x + self.text_margin, self.y + self.text_margin |
+| text_margin | top-left-right-bottom margin | 5 |
+| selection_positions.x, y | cursor top-left selection positions | |
+| selection_sizes.w, h | cursor width/height selection sizes | |
+| wrap_width | if the text has multiple lines, the maximum size in pixels before it wraps to the next | self.w - 4*self.text_margin |
+
+#### Methods
+
+---
+
+**`new(x, y, w, h, settings):`** creates a new textarea. The settings table is optional and default values will be used in case some attributes are omitted.
+
+```lua
+textarea = UI.Textarea(0, 0, 200, 200, {text_margin = 3})
+```
+
+---
+
+**`bind(key, action):`** binds a key to a button action. Current actions are:
+
+| Action | Default Key | Description |
+| :----- | :---------- | :---------- |
+| move-left | left | moves the cursor to the left |
+| move-right | right | moves the cursor to the right |
+| move-up | up | moves the cursor up |
+| move-down | down | moves the cursor down |
+| lshift | lshift | shift modifier |
+| backspace | backspace | deletes the character before the cursor |
+| delete | delete | deletes the character after the cursor |
+| lctrl | lctrl | control modifier |
+| first | home | moves to the beginning of the text |
+| last | end | moves to the end of the text |
+| cut | x | cuts the selected text with `lctrl + cut` |
+| copy | c | copies the selected text with `lctrl + copy` |
+| paste | p | pastes the selected text with `lctrl + paste` |
+| all | a | selected all text with `lctrl + all` |
+
+---
+
+**`textinput(text):`** inserts a single character `text` into the text object
+
+**`moveLeft():`** mimicks a `move-left` action and moves the cursor to the left once
+
+**`moveRight():`** mimicks a `move-right` action and moves the cursor to the right once
+
+**`moveUp():`** mimicks a `move-up` action and moves the cursor up once
+
+**`moveDown():`** mimicks a `move-down` action and moves the cursor down once
+
+**`selectLeft():`** mimicks a `lshift + move-left` action and selects to the left of the cursor once
+
+**`selectRight():`** mimicks a `lshift + move-right` action and selects to the right of the cursor once
+
+**`selectUp():`** mimicks a `lshift + move-up` action and selects up once
+
+**`selectDown():`** mimicks a `lshift + move-down` action and selects down once
+
+**`selectAll():`** mimicks a `lctrl + all` action and selects all characters
+
+**`first():`** mimicks a `first` action and moves the cursor to the beginning of the text
+
+**`last():`** mimicks a `last` action and moves the cursor to the end of the text
+
+**`backspace():`** mimicks a `backspace` action and deletes the character before the cursor
+
+**`delete():`** mimicks a `delete` action and deletes the character after the cursor
+
+**`deleteSelected():`** deletes all selected text
+
+**`cut():`** mimicks a `lctrl + cut` action and cuts all selected text
+
+**`copy():`** mimicks a `lctrl + copy` action and copies all selected text
+
+**`paste():`** mimicks a `lctrl + paste` action and pastes all previous cut or copied text
 
 ---
 
