@@ -515,3 +515,32 @@ Makes it so that this UI element can be resized with the mouse (by dragging its 
 
 ## Extensions
 
+Extensions can be used to EXTEND an UI element. This is the primary way in which you can add draw functions to an object so that it can be drawn. The `extensions` setting takes care of this:
+
+```lua
+-- main.lua
+Theme = require 'Theme'
+button = UI.Button(0, 0, 100, 100, {extensions = {Theme.Button}})
+```
+
+```lua
+-- Theme.lua
+local Theme = {}
+
+Theme.Button = {}
+Theme.Button.draw = function(self)
+  -- draw the button
+end
+
+return Theme
+```
+
+It's a table that receives other tables that contain `new`, `update`, `draw` or other functions. The first 3 are automatically loaded into an object and are executed usually at the end of each `new`, `update` and `draw` functions of that object. You can add multiple extensions to a single object.
+
+You can see a functional example of all this in the [TestTheme](https://github.com/adonaac/thranduil/blob/master/TestTheme.lua) file. You can run this repository like a normal LÖVE project and you should see everything in action.
+
+## Examples
+
+## LICENSE
+
+You can do whatever you want with this. See the [LICENSE](https://github.com/adonaac/thranduil/blob/master/LICENSE).
