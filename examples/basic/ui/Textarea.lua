@@ -33,6 +33,7 @@ function Textarea:new(ui, x, y, w, h, settings)
     self.text_x, self.text_y = self.x + self.text_margin, self.y + self.text_margin
     self.text_ix, self.text_iy = self.text_x, self.text_y
     self.text_base_x, self.text_base_y = self.text_x, self.text_y
+    self.editing_locked = settings.editing_locked
 
     self.font = settings.font or love.graphics.getFont()
     self.text_table = {}
@@ -60,6 +61,11 @@ function Textarea:update(dt, parent)
     self.text_x, self.text_y = self.text_base_x + (self.text_margin or 0) + self.text_add_x, self.text_base_y + (self.text_margin or 0)
     self.text.x, self.text.y = self.text_x, self.text_y
     self.text:update(dt)
+
+    if self.editing_locked then 
+        self.selected = false
+        return
+    end
 
     -- Figure out selection/cursor position in pixels
     self.selection_positions = {}
@@ -322,11 +328,21 @@ function Textarea:updateText()
     self.text = self.ui.Text(self.text_x, self.text_y, self:join(), self.text_settings)
 end
 
-function Textarea:textinput(text)
+function Textarea:textinput(text, dont_update)
     if not self.selected then return end
     self:deleteSelected()
     table.insert(self.text_table, self.index, text)
     self.index = self.index + 1
+    if not dont_update then self:updateText() end
+end
+
+function Textarea:addText(text)
+    local previous_selected = self.selected
+    self.selected = true
+    for i = 1, #text do
+        self:textinput(text:utf8sub(i, i), true)
+    end
+    self.selected = previous_selected
     self:updateText()
 end
 

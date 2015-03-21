@@ -39,6 +39,8 @@ function Scrollarea:new(ui, x, y, w, h, settings)
                                                                                 draggable = true, drag_margin = 0, only_drag_vertically = true})
     self.horizontal_scrollbar_button = self.ui.Button(self.scroll_button_width, self.area_height, 0, bh, {extensions = extensions or {}, annotation = "Horizontal scrollbar button",
                                                                                                           draggable = true, drag_margin = bh, only_drag_horizontally = true})
+
+    self.dynamic_scroll_set = settings.dynamic_scroll_set
     if self.area_width < self.w then 
         self.horizontal_scrolling = true 
         self.horizontal_scrollbar_button.w = (self.area_width - 2*self.scroll_button_width)/(self.w/self.area_width)
@@ -57,6 +59,18 @@ function Scrollarea:update(dt, parent)
     local x, y = love.mouse.getPosition()
     local parent_x, parent_y = 0, 0
     if parent then parent_x, parent_y = parent.x, parent.y end
+
+    if self.dynamic_scroll_set then
+        if self.area_width < self.w then 
+            self.horizontal_scrolling = true 
+            self.horizontal_scrollbar_button.w = (self.area_width - 2*self.scroll_button_width)/(self.w/self.area_width)
+        end
+        if self.area_height < self.h then 
+            self.vertical_scrolling = true 
+            self.vertical_scrollbar_button.h = (self.area_height - 2*self.scroll_button_height)/(self.h/self.area_height)
+            self.vertical_scrollbar_button.drag_margin = self.vertical_scrollbar_button.h
+        end
+    end
 
     self:containerUpdate(dt, parent)
 
