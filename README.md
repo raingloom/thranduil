@@ -14,7 +14,9 @@ UI = require 'ui/UI'
 And register it to most of LÖVE's callbacks:
 
 ```lua
-UI.registerEvents()
+function love.load()
+  UI.registerEvents()
+end
 ```
 
 ## Table of Contents
@@ -37,6 +39,20 @@ UI.registerEvents()
     * [Text attributes](text-attributes)
     * [Methods](#methods-2)
     * [Basic textinput drawing](#basic-textinput-drawing)
+* [Mixins](#mixins)
+  * [Base](#base)
+    * [Attributes](#base-attributes)
+    * [Methods](#base-methods)
+  * [Closeable](#closeable)
+    * [Attributes](#closeable-attributes)
+  * [Container](#container)
+    * [Attributes](#container-attributes)
+    * [Methods](#container-methods)
+  * [Draggable](#draggable)
+    * [Attributes](#draggable-attributes)
+    * [Methods](#draggable-methods)
+  * [Resizable](#resizable)
+    * [Attributes](#resizable-attributes)
 * [Extensions](#extensions)
 * [Themes](#themes)
 
@@ -52,8 +68,10 @@ This object can then be updated via `button:update(dt)` and it will automaticall
 
 This function will use the object's attributes to change how it looks under different states. The UI module is designed in this way so that you can have absolute control over how each UI element looks, which means that integration with a game (which usually needs random UI elements in the most unexpected places) is as straightforward as working with any other game object.
 
+The way in which draw functions are added to objects is explained in the [Extensions](#extensions) section.
+
 ```lua
-button.draw = function(self)
+Theme.Button.draw = function(self)
   love.graphics.setColor(64, 64, 64)
   love.graphics.rectangle('fill', self.x, self.y, self.w, self.h)
   if self.down then
@@ -491,6 +509,148 @@ textinput.draw = function(self)
     love.graphics.setColor(255, 255, 255, 255)
 end
 ```
+
+## Mixins
+
+Internally each UI element is composed of multiple mixins (reusable code that's common between elements) as well as specific code that makes that element work. For the purposes of saving documentation space by not repeating the same attributes and methods over multiple objects, I've listed those mixins here, but when using the UI library you probably won't need to care about them. 
+
+On the [Elements](#elements) section, when an UI element implements Base, Draggable and Resizable for instance, it means that it contains all the attributes and methods of those 3 mixins.
+
+### Base
+
+Base mixin that gives core functionality to all UI elements...
+
+#### Attributes
+
+| Attribute | Description |
+| :-------- | :---------- |
+| x, y | the element's top-left position |
+| w, h | the element's width and height |
+| hot | true if the mouse is over this element (inside its x, y, w, h rectangle) |
+| selected | true if the element is currently selected (if its being interacted with or selected with TAB) |
+| pressed | true on the frame the element was pressed |
+| down | true when the element is being held down after being pressed |
+| released | true on the frame the element was released |
+| enter | true on the frame the mouse enters this element's area |
+| exit | true on the frame the mouse exits this element's area |
+| selected_enter | true on the frame the element enters selection |
+| selected_exit | true on the frame the element exists selection |
+
+#### Methods
+
+---
+
+**`bind(key, action):`** binds a key to a button action. Current actions are:
+
+| Action | Default Key | Description |
+| :----- | :---------- | :---------- |
+| left-click | mouse1 | mouse's left click |
+| key-enter | return | activation key, enter |
+
+---
+
+### Closeable
+
+Makes it so that a UI element has a close button and that it can be closed.
+
+#### Attributes
+
+* If the `closeable` attribute is not set to true, then the close button logic for this element won't happen. 
+* If `closed` is set to true then the frame won't update nor be drawn. 
+* Default values are set if the attribute is omitted on the settings table on this element's creation.
+
+| Attribute | Description | Default Value |
+| :-------- | :---------- | :------------ |
+| closeable | if this element can be closed or not | false |
+| closed | if the element is closed or not | false |
+| close_margin | top-right margin for close button | 5 |
+| close_button_width | width of the close button | 10 |
+| close_button_height | height of the close button | 10 |
+| close_button_extensions | the extensions to be used for the close button | |
+| close_button | a reference to the close button | |
+
+### Container
+
+Adds the ability for an UI element to contain other UI elements.
+
+#### Attributes
+
+| Attribute | Description | Default Value |
+| :-------- | :---------- | :------------ |
+| elements | a table holding all children inside this element | {} |
+| currently_focused_element | index of the child that is currently focused | |
+| any_selected | if any child is selected or not | false |
+
+#### Methods
+
+---
+
+**`bind(key, action):`** binds a key to a button action. Current actions are:
+
+| Action | Default Key | Description |
+| :----- | :---------- | :---------- |
+| focus-next | tab | selects the next child to focus on (sets its `.selected` attribute to true) |
+| previous-modifier | lshift | modifier key to be pressed with `focus-next` to focus on the previous child |
+| unselect | escape | unselects the currently selected child |
+
+---
+
+**`focusNext():`** mimicks a `focus-next` action and focuses on the next child
+
+**`focusPrevious():`** mimicks a `focus-previous` action and focuses on the previous child
+
+**`unselect():`** mimicks a `unselect` action and unselects the currently focused child
+
+---
+
+### Draggable
+
+#### Attributes
+
+* If the `draggable` attribute is not set to true, then the dragging logic for this element won't happen. 
+* Default values are set if the attribute is omitted on the settings table on this element's creation.
+
+| Attribute | Description | Default Value |
+| :-------- | :---------- | :------------ |
+| draggable | if this element can be dragged or not | false |
+| drag_margin | top margin for drag bar | self.h/5 |
+| drag_hot | true if the mouse is over this element's drag area (inside its x, y, w, h rectangle) | |
+| drag_enter | true on the frame the mouse enters this element's drag area | |
+| drag_exit | true on the frame the mouse exits this element's exit area | |
+| drag_min_limit_x, y | minimum x, y limit this element can be dragged to | |
+| drag_max_limit_x, y | maximum x, y limit this element can be dragged to | |
+| only_drag_horizontally | only drags the element horizontally | |
+| only_drag_vertically | only drags the element vertically | |
+
+#### Methods
+
+---
+
+**`setDragLimits(x_min, y_min, x_max, y_max):`** sets this element's drag limits
+
+```lua
+-- Makes it so that the element can't be dragged below x = 100 and above x = 400
+element:setDragLimits(100, nil, 400, nil)
+```
+
+### Resizable
+
+Makes it so that this UI element can be resized with the mouse (by dragging its borders).
+
+#### Attributes
+
+* If the `resizable` attribute is not set to true, then the resizing logic for this element won't happen. 
+* Default values are set if the attribute is omitted on the settings table on this element's creation.
+
+| Attribute | Description | Default Value |
+| :-------- | :---------- | :------------ |
+| resizable | if this element can be resized or not | false |
+| resize_margin | top-left-bottom-right margin for resizing | 6 |
+| resize_hot | true if the mouse is over this element's resize area | |
+| resize_enter | true on the frame the mouse enters this element's resize area | |
+| resize_exit | true on the frame the mouse exits this element's resize area | |
+| min_width | minimum element width | 20 |
+| min_height | minimum element height | self.h/5 |
 
 ## Extensions
 
