@@ -24,21 +24,11 @@ end
 * [Introduction](#introduction)
 * [Elements](#elements)
   * [Button](#button)
-    * [Base attributes](#base-attributes)
     * [Methods](#methods)
     * [Basic button drawing](#basic-button-drawing)
   * [Frame](#frame)
-    * [Base attributes](#base-attributes-1)
-    * [Close attributes](#close-attributes)
-    * [Drag attributes](#drag-attributes)
-    * [Resize attributes](#resize-attributes)
     * [Methods](#methods-1)
     * [Basic frame drawing](#basic-frame-drawing)
-  * [Textinput](#textinput)
-    * [Base attributes](#base-attributes-2)
-    * [Text attributes](text-attributes)
-    * [Methods](#methods-2)
-    * [Basic textinput drawing](#basic-textinput-drawing)
 * [Mixins](#mixins)
   * [Base](#base)
     * [Attributes](#base-attributes)
@@ -54,7 +44,6 @@ end
   * [Resizable](#resizable)
     * [Attributes](#resizable-attributes)
 * [Extensions](#extensions)
-* [Themes](#themes)
 
 ## Introduction
 
@@ -86,32 +75,11 @@ end
 
 ### Button
 
-<p align="center">
-  <img src="https://github.com/adonaac/thranduil/blob/master/images/button.png?raw=true" alt="button"/>
-</p>
-
 A button is a rectangle that can be pressed. Implements:
 
 * [Base](#base)
 * [Draggable](#draggable)
 * [Resizable](#resizable)
-
-```lua
-function init()
-  button = UI.Button(0, 0, 100, 100)
-end
-
-function update(dt)
-  button:update(dt)
-  if button.pressed then print('button was pressed!') end
-  if button.released then print('button was released!') end
-  if button.down then print('button is down!') end
-end
-
-function draw()
-  button:draw()
-end
-```
 
 #### Methods
 
@@ -137,11 +105,37 @@ end
 
 ---
 
-### Frame
+### Checkbox
 
-<p align="center">
-  <img src="https://github.com/adonaac/thranduil/blob/master/images/frame.png?raw=true" alt="button"/>
-</p>
+A checkbox is like a button that can be checked or not. Implements:
+
+* [Base](#base)
+* [Draggable](#draggable)
+* [Resizable](#resizable)
+
+#### Attributes
+
+| Attribute | Description |
+| :-------- | :---------- |
+| checked | if the checkbox is checked or not |
+
+#### Methods
+
+---
+
+**`toggle():`** mimicks a checkbox press, changing the checkbox's `checked` state
+
+```lua
+function update(dt)
+  checkbox:update(dt)
+  -- Automatically changes the checkbox's state on hover enter
+  if checkbox.enter then checkbox:toggle() end
+end
+```
+
+---
+
+### Frame
 
 A frame is a container/panel/window that can contain other UI elements. Implements:
 
@@ -150,23 +144,6 @@ A frame is a container/panel/window that can contain other UI elements. Implemen
 * [Container](#container)
 * [Draggable](#draggable)
 * [Resizable](#resizable)
-
-```lua
-function init()
-  frame = UI.Frame(0, 0, 100, 100)
-end
-
-function update(dt)
-  frame:update(dt)
-  if frame.enter then print('Focused element #: ' .. (frame.currently_focused_element or 0)) end
-  if frame.exit then print('# of elements: ' .. #frame.elements) end
-  if frame.selected then print('frame is being interacted with!') end
-end
-
-function draw()
-  frame:draw()
-end
-```
 
 #### Methods
 
@@ -189,11 +166,69 @@ local button = frame:addElement(UI.Button(5, 5, 100, 100))
 
 ---
 
+### Scrollarea
+
+A scrollarea is an area that can contain other UI elements and that also can be scrolled. Implements:
+
+* [Base](#base)
+* [Container](#container)
+
+#### Attributes
+
+| Attribute | Description | Default Value |
+| :-------- | :---------- | :------------ |
+| area_width | visible scroll area's width | self.w |
+| area_height | visible scroll area's height | self.h |
+| scroll_button_width | width of all scroll buttons | 15 |
+| scroll_button_height | height of all scroll buttons | 15 |
+| show_scrollbars | if scrollbars are visible or not, can still scroll even without them visible | |
+| horizontal_scrollbar_button | reference to the horizontal scrollbar slider button | |
+| horizontal_scrollbar_left_button | reference to the horizontal scrollbar left button | |
+| horizontal_scrollbar_right_button | reference to the horizontal scrollbar right button | |
+| horizontal_step | horizontal scrolling step in pixels | 5 |
+| horizontal_scrolling | if horizontal scrolling is activated | true if area_width < self.w |
+| vertical_scrollbar_button | reference to the vertical scrollbar slider button | |
+| vertical_scrollbar_top_button | reference to the vertical scrollbar top button | |
+| vertical_scrollbar_bottom_button | reference to the vertical scrollbar bottom button | |
+| vertical_step | vertical scrolling step in pixels | 5 |
+| vertical_scrolling | if vertical scrolling is activated | true if area_height < self.h |
+
+#### Methods
+
+---
+
+**`new(x, y, w, h, settings):`** creates a new scrollarea. The settings table is optional and default values will be used in case some attributes are omitted.
+
+```lua
+scrollarea = UI.Scrollarea(0, 0, 200, 200, {area_width = 100, area_height = 100, show_scrollbars = true})
+```
+
+---
+
+**`bind(key, action):`** binds a key to a button action. Current actions are:
+
+| Action | Default Key | Description |
+| :----- | :---------- | :---------- |
+| scroll-left | left | scrolls left by `horizontal_step` pixels |
+| scroll-right | right | scrolls right by `horizontal_step` pixels |
+| scroll-up | up | scrolls up by `vertical_step` pixels |
+| scroll-down | down | scrolls down by `vertical_step` pixels |
+
+---
+
+**`scrollLeft(step):`** mimicks a `scroll-left` action and scrolls by `step` pixels
+
+**`scrollRight(step):`** mimicks a `scroll-right` action and scrolls by `step` pixels
+
+**`scrollUp(step):`** mimicks a `scroll-up` action and scrolls by `step` pixels
+
+**`scrollDown(step):`** mimicks a `scroll-down` action and scrolls by `step` pixels
+
+---
+
 ## Mixins
 
 Internally each UI element is composed of multiple mixins (reusable code that's common between elements) as well as specific code that makes that element work. For the purposes of saving documentation space by not repeating the same attributes and methods over multiple objects, I've listed those mixins here, but when using the UI library you probably won't need to care about them. On the [Elements](#elements) section, when an UI element implements Base, Draggable and Resizable for instance, it means that it contains all the attributes and methods of those 3 mixins.
-
----
 
 ### Base
 
@@ -216,6 +251,8 @@ Base mixin that gives core functionality to all UI elements.
 | selected_exit | true on the frame the element exists selection |
 
 #### Methods
+
+---
 
 **`bind(key, action):`** binds a key to a button action. Current actions are:
 
@@ -262,6 +299,8 @@ Adds the ability for an UI element to contain other UI elements.
 
 #### Methods
 
+---
+
 **`bind(key, action):`** binds a key to a button action. Current actions are:
 
 | Action | Default Key | Description |
@@ -269,6 +308,8 @@ Adds the ability for an UI element to contain other UI elements.
 | focus-next | tab | selects the next child to focus on (sets its `.selected` attribute to true) |
 | previous-modifier | lshift | modifier key to be pressed with `focus-next` to focus on the previous child |
 | unselect | escape | unselects the currently selected child |
+
+---
 
 **`focusNext():`** mimicks a `focus-next` action and focuses on the next child
 
