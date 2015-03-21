@@ -1,4 +1,4 @@
-# Thranduil - WIP
+# Thranduil
 
 A UI module for LÖVE. Facilitates the creation of game specific UI through UI elements that have all 
 their logic abstracted away (anything having to do with input and the element's state), leaving you with the job of specifying how those elements will be drawn.
@@ -538,8 +538,6 @@ return Theme
 It's a table that receives other tables that contain `new`, `update`, `draw` or other functions. The first 3 are automatically loaded into an object and are executed usually at the end of each `new`, `update` and `draw` functions of that object. You can add multiple extensions to a single object.
 
 You can see a functional example of all this in the [TestTheme](https://github.com/adonaac/thranduil/blob/master/TestTheme.lua) file. You can run this repository like a normal LÖVE project and you should see everything in action.
-
-## Examples
 
 ## LICENSE
 
