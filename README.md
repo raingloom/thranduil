@@ -535,9 +535,7 @@ end
 return Theme
 ```
 
-It's a table that receives other tables that contain `new`, `update`, `draw` or other functions. The first 3 are automatically loaded into an object and are executed usually at the end of each `new`, `update` and `draw` functions of that object. You can add multiple extensions to a single object.
-
-You can see a functional example of all this in the [TestTheme](https://github.com/adonaac/thranduil/blob/master/TestTheme.lua) file. You can run this repository like a normal LÖVE project and you should see everything in action.
+It's a table that receives other tables that contain `new`, `update`, `draw` or other functions. The first 3 are automatically loaded into an object and are executed usually at the end of each `new`, `update` and `draw` functions of that object. You can add multiple extensions to a single object. You can see an example of all this in the [TestTheme](https://github.com/adonaac/thranduil/blob/master/examples/basic/TestTheme.lua) file. You can also run the folders in the examples directory like normal LÖVE projects to see how everything works.
 
 ## LICENSE
 
