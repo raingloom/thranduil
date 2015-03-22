@@ -1,6 +1,15 @@
-v0.1.1
+v0.1.2
 
 ## CHANGELOG
+
+### v0.1.2
+
+
+#### Fixes
+
+* Fixed some pathing issues - [36ec47b](https://github.com/adonaac/thranduil/commit/36ec47b8ded48ab7bc4e297a9149db84caaca09c) (2015-03-22 06:34:06)
+
+---
 
 ### v0.1.1
 
