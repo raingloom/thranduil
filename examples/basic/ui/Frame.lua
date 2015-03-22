@@ -1,4 +1,4 @@
-local ui_path = (...):sub(1, (...):find('/'))
+local ui_path = tostring(...):sub(1, -6)
 local Object = require(ui_path .. 'classic/classic')
 local Base = require(ui_path .. 'Base')
 local Closeable = require(ui_path .. 'Closeable')

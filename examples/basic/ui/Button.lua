@@ -1,4 +1,4 @@
-local ui_path = (...):sub(1, (...):find('/'))
+local ui_path = tostring(...):sub(1, -7)
 local Object = require(ui_path .. 'classic/classic')
 local Base = require(ui_path .. 'Base')
 local Button = Object:extend('Button')
