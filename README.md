@@ -192,6 +192,7 @@ A scrollarea is an area that can contain other UI elements and that also can be 
 | scroll_button_width | width of all scroll buttons | 15 |
 | scroll_button_height | height of all scroll buttons | 15 |
 | show_scrollbars | if scrollbars are visible or not, can still scroll even without them visible | |
+| dynamic_scroll_set | if enabling scrolling should be updated or not | |
 | horizontal_scrollbar_button | reference to the horizontal scrollbar slider button | |
 | horizontal_scrollbar_left_button | reference to the horizontal scrollbar left button | |
 | horizontal_scrollbar_right_button | reference to the horizontal scrollbar right button | |
@@ -293,6 +294,7 @@ A textarea is an area that can contain text and be editted. It uses [Popo](https
 | :-------- | :---------- | :------------ |
 | single_line | if the text area allows only one line of input | false |
 | font | the font to be used | default LÖVE font |
+| editing_locked | if the textarea can be edited or not | |
 | text | reference to the Popo text object | |
 | text_x, y | text's x, y positions | self.x + self.text_margin, self.y + self.text_margin |
 | text_margin | top-left-right-bottom margin | 5 |
