@@ -4,7 +4,7 @@ TestTheme = require 'TestTheme'
 function love.load()
     UI.registerEvents()
 
-    button = UI.Button(10, 10, 50, 50, {extensions = {TestTheme.Button}, draggable = true, resizable = true})
+    button = UI.Button(10, 10, 50, 50)
     checkbox = UI.Checkbox(70, 10, 50, 50, {extensions = {TestTheme.Checkbox}, draggable = true, resizable = true})
     slider = UI.Slider(10, 70, 110, 40, {extensions = {TestTheme.Slider}, value_interval = 10, draggable = true, resizable = true})
 

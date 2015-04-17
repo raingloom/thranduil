@@ -9,6 +9,7 @@ Slider:implement(Draggable)
 Slider:implement(Resizable)
 
 function Slider:new(ui, x, y, w, h, settings)
+    local settings = settings or {}
     self.ui = ui
     self.id = self.ui.addToElementsList(self)
     self.type = 'Slider'

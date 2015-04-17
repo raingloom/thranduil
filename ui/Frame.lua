@@ -13,6 +13,7 @@ Frame:implement(Draggable)
 Frame:implement(Resizable)
 
 function Frame:new(ui, x, y, w, h, settings)
+    local settings = settings or {}
     self.ui = ui
     self.id = self.ui.addToElementsList(self)
     self.type = 'Frame'

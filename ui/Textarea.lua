@@ -5,6 +5,7 @@ local Textarea = Object:extend('Textarea')
 Textarea:implement(Base)
 
 function Textarea:new(ui, x, y, w, h, settings)
+    local settings = settings or {}
     self.ui = ui
     self.id = self.ui.addToElementsList(self)
     self.type = 'Textarea'
