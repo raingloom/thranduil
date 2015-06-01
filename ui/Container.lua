@@ -16,6 +16,12 @@ function Container:containerNew(settings)
     self.elements = {}
     self.currently_focused_element = nil
     self.any_selected = false
+    if self.auto_align then 
+        self.auto_spacing = settings.auto_spacing or 5
+        self.auto_margin = settings.auto_margin or 5
+        self.align_positions = {} 
+        table.insert(self.align_positions, {x = self.auto_margin, y = self.auto_margin})
+    end
 end
 
 function Container:containerUpdate(dt, parent)
@@ -50,6 +56,8 @@ function Container:containerUpdate(dt, parent)
         if self.input:pressed('unselect') then self:unselect() end
     end
 
+    if self.dont_update_draw then return end 
+
     -- Update children
     if self.type == 'Scrollarea' then
         for _, element in ipairs(self.elements) do
@@ -66,14 +74,71 @@ function Container:containerUpdate(dt, parent)
 end
 
 function Container:containerDraw()
+    if self.dont_update_draw then return end 
     for _, element in ipairs(self.elements) do element:draw() end
 end
 
 function Container:containerAddElement(element)
-    element.parent = self
-    table.insert(self.elements, element)
-    element:update(0, self)
-    return element
+    if self.auto_align then
+        local element = self:addAlignedElement(element)
+        if element then return element end
+    else
+        element.parent = self
+        table.insert(self.elements, element)
+        element:update(0, self)
+        return element
+    end
+end
+
+function Container:addAlignedElement(element)
+    local pointInRectangle = function(x, y, bx, by, bw, bh) if x >= bx and x <= bx + bw and y >= by and y <= by + bh then return true end end
+    local rectangleInRectangle = function(ax, ay, aw, ah, bx, by, bw, bh) return ax <= bx + bw and bx <= ax + aw and ay <= by + bh and by <= ay + ah end
+    local elementCollidingWithElement = function(ex, ey, ew, eh)
+        for i, e in ipairs(self.elements) do
+            if rectangleInRectangle(ex, ey, ew, eh, e.ix, e.iy, e.w, e.h) then return true end
+        end
+    end
+    local alignContains = function(ap)
+        for _, p in ipairs(self.align_positions) do
+            local dx, dy = math.abs(p.x - ap.x), math.abs(p.y - ap.y)
+            if dx < 0.05 and dy < 0.05 then return true end
+        end
+    end
+
+    for i, p in ipairs(self.align_positions) do
+        if p.x + element.w <= self.w - self.auto_margin and p.y + element.h <= self.h - self.auto_margin 
+        and not elementCollidingWithElement(p.x, p.y, element.w + self.auto_spacing, element.h + self.auto_spacing) then
+            element.x, element.y = p.x, p.y
+            element.ix, element.iy = p.x, p.y
+            local x, y = p.x, p.y
+            table.remove(self.align_positions, i)
+
+            -- Remove element colliding anchors
+            if #self.align_positions > 0 then
+                for j = #self.align_positions, 1 do
+                    if pointInRectangle(self.align_positions[j].x, self.align_positions[j].y, element.x, element.y, element.w + self.auto_spacing, element.h + self.auto_spacing) then
+                        table.remove(self.align_positions, j)
+                    end
+                end
+            end
+
+            -- Add right anchor
+            if x + element.w + self.auto_spacing < self.w - self.auto_margin then 
+                local ap = {x = x + element.w + self.auto_spacing, y = y}
+                if not alignContains(ap) then table.insert(self.align_positions, ap) end
+            end
+            -- Add down anchor
+            if y + element.h + self.auto_spacing < self.h - self.auto_margin then 
+                local ap = {x = x, y = y + element.h + self.auto_spacing}
+                if not alignContains(ap) then table.insert(self.align_positions, ap) end
+            end
+
+            element.parent = self
+            table.insert(self.elements, element)
+            element:update(0, self)
+            return element
+        end
+    end
 end
 
 function Container:focusNext()
