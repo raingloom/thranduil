@@ -1,6 +1,16 @@
-v0.1.2
+v0.1.3
 
 ## CHANGELOG
+
+### v0.1.3
+
+#### Additions
+
+* Added option to not update or draw children in Containers - [8e89032](https://github.com/adonaac/thranduil/commit/8e89032299656283aee7b304e97e8f9752681976) (2015-06-26 10:58:00)
+* Added auto alignment options for Container - [8e89032](https://github.com/adonaac/thranduil/commit/8e89032299656283aee7b304e97e8f9752681976) (2015-06-26 10:58:00)
+* Added element removal for Container - [8e89032](https://github.com/adonaac/thranduil/commit/8e89032299656283aee7b304e97e8f9752681976) (2015-06-26 10:58:00)
+
+---
 
 ### v0.1.2
 
