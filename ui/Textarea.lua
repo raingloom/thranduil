@@ -11,6 +11,7 @@ function Textarea:new(ui, x, y, w, h, settings)
     self.type = 'Textarea'
 
     self:basePreNew(x, y, w, h, settings)
+
     self:bind('mouse1', 'left-click')
     self:bind('left', 'move-left')
     self:bind('right', 'move-right')
@@ -26,6 +27,7 @@ function Textarea:new(ui, x, y, w, h, settings)
     self:bind('c', 'copy')
     self:bind('v', 'paste')
     self:bind('a', 'all')
+    self:bind('escape', 'unselect')
 
     self.single_line = settings.single_line
     self.text_margin = settings.text_margin or 5
@@ -67,6 +69,8 @@ function Textarea:update(dt, parent)
         self.selected = false
         return
     end
+
+    if self.selected and self.input:pressed('unselect') then self.selected = false end
 
     -- Figure out selection/cursor position in pixels
     self.selection_positions = {}
@@ -345,6 +349,25 @@ function Textarea:addText(text)
     end
     self.selected = previous_selected
     self:updateText()
+end
+
+function Textarea:setText(text)
+    local previous_selected = self.selected
+    self.selected = true
+    self.index = 1
+    self.text_table = {}
+    local text_table = {}
+    for i = 1, #text do table.insert(text_table, text:utf8sub(i, i)) end
+    for i = 1, #text_table do
+        table.insert(self.text_table, i, text_table[i])
+        self.index = self.index + 1
+    end
+    self.selected = previous_selected
+    self:updateText()
+end
+
+function Textarea:getText()
+    return self.text.str_text
 end
 
 function Textarea:join(table)

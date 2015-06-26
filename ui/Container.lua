@@ -56,7 +56,7 @@ function Container:containerUpdate(dt, parent)
         if self.input:pressed('unselect') then self:unselect() end
     end
 
-    if self.dont_update_draw then return end 
+    if self.dont_update_draw_children then return end 
 
     -- Update children
     if self.type == 'Scrollarea' then
@@ -74,7 +74,7 @@ function Container:containerUpdate(dt, parent)
 end
 
 function Container:containerDraw()
-    if self.dont_update_draw then return end 
+    if self.dont_update_draw_children then return end 
     for _, element in ipairs(self.elements) do element:draw() end
 end
 
@@ -90,24 +90,37 @@ function Container:containerAddElement(element)
     end
 end
 
+function Container:containerRemoveElement(id)
+    for i, element in ipairs(self.elements) do
+        if element.id == id then 
+            if self.auto_align then
+                local ap = {x = element.ix, y = element.iy}
+                table.insert(self.align_positions, 1, ap)
+            end
+            table.remove(self.elements, i)
+            return
+        end
+    end
+end
+
 function Container:addAlignedElement(element)
     local pointInRectangle = function(x, y, bx, by, bw, bh) if x >= bx and x <= bx + bw and y >= by and y <= by + bh then return true end end
     local rectangleInRectangle = function(ax, ay, aw, ah, bx, by, bw, bh) return ax <= bx + bw and bx <= ax + aw and ay <= by + bh and by <= ay + ah end
-    local elementCollidingWithElement = function(ex, ey, ew, eh)
+    local elementCollidingWithElement = function(ex, ey, ew, eh, id)
         for i, e in ipairs(self.elements) do
             if rectangleInRectangle(ex, ey, ew, eh, e.ix, e.iy, e.w, e.h) then return true end
         end
     end
     local alignContains = function(ap)
-        for _, p in ipairs(self.align_positions) do
+        for i, p in ipairs(self.align_positions) do
             local dx, dy = math.abs(p.x - ap.x), math.abs(p.y - ap.y)
-            if dx < 0.05 and dy < 0.05 then return true end
+            if dx < 0.05 and dy < 0.05 then return i end
         end
     end
 
     for i, p in ipairs(self.align_positions) do
         if p.x + element.w <= self.w - self.auto_margin and p.y + element.h <= self.h - self.auto_margin 
-        and not elementCollidingWithElement(p.x, p.y, element.w + self.auto_spacing, element.h + self.auto_spacing) then
+        and not elementCollidingWithElement(p.x, p.y, element.w, element.h) then
             element.x, element.y = p.x, p.y
             element.ix, element.iy = p.x, p.y
             local x, y = p.x, p.y
@@ -125,7 +138,7 @@ function Container:addAlignedElement(element)
             -- Add right anchor
             if x + element.w + self.auto_spacing < self.w - self.auto_margin then 
                 local ap = {x = x + element.w + self.auto_spacing, y = y}
-                if not alignContains(ap) then table.insert(self.align_positions, ap) end
+                if not alignContains(ap) then table.insert(self.align_positions, 1, ap) end
             end
             -- Add down anchor
             if y + element.h + self.auto_spacing < self.h - self.auto_margin then 
@@ -169,6 +182,13 @@ function Container:focusPrevious()
     else self.currently_focused_element = #self.elements end
 end
 
+function Container:focusElement(n)
+    if not n then return end
+    if not self.currently_focused_element then self.currently_focused_element = n; return end
+    for _, element in ipairs(self.elements) do element.selected = false end
+    if #self.elements >= n then self.currently_focused_element = n end
+end
+
 function Container:focusDirection(direction)
     for _, element in ipairs(self.elements) do if element.any_selected then return end end
     for i, element in ipairs(self.elements) do 
@@ -180,6 +200,7 @@ function Container:focusDirection(direction)
         local angles = {right = 0, left = -180, up = -90, down = 90}
         local min, j, n = 10000, nil, 0
         local selected_element = self.elements[self.currently_focused_element]
+        if not selected_element then return end
         for i, element in ipairs(self.elements) do
             if i ~= self.currently_focused_element then
                 local d = math.sqrt(math.pow(selected_element.x - element.x, 2) + math.pow(selected_element.y - element.y, 2))
@@ -234,6 +255,13 @@ function Container:unselect()
             self.currently_focused_element = nil
         end
     else self.selected = false end
+end
+
+function Container:forceUnselect()
+    for _, element in ipairs(self.elements) do
+        element.selected = false
+        self.currently_focused_element = nil
+    end
 end
 
 return Container

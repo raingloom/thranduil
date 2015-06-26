@@ -59,4 +59,12 @@ function Frame:addElement(element)
     return self:containerAddElement(element)
 end
 
+function Frame:removeElement(id)
+    return self:containerRemoveElement(id)
+end
+
+function Frame:getElement(id)
+    return self:containerGetElement(id)
+end
+
 return Frame

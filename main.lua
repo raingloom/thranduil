@@ -29,7 +29,7 @@ end
 
 function love.keypressed(key)
     if key == ' ' then
-        frame:addElement(UI.Button(0, 0, math.random(15, 50), math.random(15, 50), {extensions = {TestTheme.Button}}))
+        frame:addElement(UI.Button(0, 0, math.random(15, 50), math.random(15, 25), {extensions = {TestTheme.Button}}))
     end
     
 end
