@@ -1,6 +1,39 @@
-v0.1.3
+v0.1.4
 
 ## CHANGELOG
+
+### v0.1.4
+
+#### Additions
+
+* Added overridable getMousePosition - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Added auto align options to containers via auto_align, auto_spacing and auto_margin - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Added container element selection via directions (left, right, up, down) - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Added container functions focusElement, forceUnselect and destroy - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Added draggable attributes drag_start and drag_end - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Added resizable corner resizing via resize_corner, resize_corner_width, resize_corner_height - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Added resizable attributes resize_start and resize_end - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Added vertical slider option - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Added slider attributes slide_start and slide_end - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Added textarea tabs - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Added textarea new lines via enter - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Added textarea undo/redo - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Added textarea hooks for Popo tags via setTextSettings and wrap_text_in - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Added cursor visibility (blinking) to textarea via cursor_visible and cursor_blink_interval - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+
+#### Fixes
+
+* Fixed slider's dragging code to be more responsive in edge cases - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Improved textarea's cursor selection to be more responsive in edge cases - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+
+#### Updates
+
+* Updated closeable button's close_margin to now be close_margin_top and close_margin_right - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Updated resizable's resize_margin to now be resize_margin_left, resize_margin_right, resize_margin_up and resize_margin_down - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Updated the library to support 0.10.0 on top of 0.9.1 and 0.9.2 - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+* Updated TestTheme to accomodate for all new changes - [594c93c](https://github.com/adonaac/thranduil/commit/594c93c0d8b3dafcafc38b4b0432f1ac052daba2) (2015-07-19 07:26:48)
+
+---
 
 ### v0.1.3
 
