@@ -6,10 +6,11 @@ function Closeable:closeableNew(settings)
     local settings = settings or {}
     self.closing = false
     self.closed = settings.closed or false
-    self.close_margin = settings.close_margin or 5
+    self.close_margin_top = settings.close_margin_top or 5
+    self.close_margin_right = settings.close_margin_right or 5
     self.close_button_width = settings.close_button_width or 10
     self.close_button_height = settings.close_button_height or 10
-    self.close_button = self.ui.Button(self.w - self.close_margin - self.close_button_width, self.close_margin, self.close_button_width, self.close_button_height,
+    self.close_button = self.ui.Button(self.w - self.close_margin_right - self.close_button_width, self.close_margin_top, self.close_button_width, self.close_button_height,
                                       {extensions = settings.close_button_extensions or {}, annotation = settings.annotation})
     self:bind('escape', 'close')
 end

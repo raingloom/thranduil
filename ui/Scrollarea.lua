@@ -235,7 +235,7 @@ function Scrollarea:draw()
         love.graphics.setScissor(self.x + self.x_offset, self.y + self.y_offset, self.area_width, self.area_height) 
     end
 
-    self:baseDraw()
+    self:basePreDraw()
     love.graphics.setScissor(self.x + self.x_offset, self.y + self.y_offset, self.area_width, self.area_height) 
     self:containerDraw()
     love.graphics.setScissor()
@@ -252,10 +252,19 @@ function Scrollarea:draw()
             self.horizontal_scrollbar_right_button:draw()
         end
     end
+    self:basePostDraw()
 end
 
 function Scrollarea:addElement(element)
     return self:containerAddElement(element)
+end
+
+function Scrollarea:removeElement(id)
+    return self:containerRemoveElement(id)
+end
+
+function Scrollarea:getElement(id)
+    return self:containerGetElement(id)
 end
 
 function Scrollarea:scrollUp(step)

@@ -12,6 +12,10 @@ function Container:containerNew(settings)
     self:bind('right', 'focus-right')
     self:bind('up', 'focus-up')
     self:bind('down', 'focus-down')
+    self:bind('dpleft', 'focus-left')
+    self:bind('dpright', 'focus-right')
+    self:bind('dpup', 'focus-up')
+    self:bind('dpdown', 'focus-down')
 
     self.elements = {}
     self.currently_focused_element = nil
@@ -56,7 +60,7 @@ function Container:containerUpdate(dt, parent)
         if self.input:pressed('unselect') then self:unselect() end
     end
 
-    if self.dont_update_draw_children then return end 
+    if self.dont_update_draw then return end 
 
     -- Update children
     if self.type == 'Scrollarea' then
@@ -74,7 +78,7 @@ function Container:containerUpdate(dt, parent)
 end
 
 function Container:containerDraw()
-    if self.dont_update_draw_children then return end 
+    if self.dont_update_draw then return end 
     for _, element in ipairs(self.elements) do element:draw() end
 end
 
@@ -262,6 +266,14 @@ function Container:forceUnselect()
         element.selected = false
         self.currently_focused_element = nil
     end
+end
+
+function Container:destroy()
+    local ids = {}
+    for _, element in ipairs(self.elements) do table.insert(ids, element.id) end
+    for _, id in ipairs(ids) do self:removeElement(id) end
+    for _, id in ipairs(ids) do self.ui.removeFromElementsList(id) end
+    self.ui.removeFromElementsList(self.id)
 end
 
 return Container

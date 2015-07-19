@@ -11,6 +11,7 @@ function Base:basePreNew(x, y, w, h, settings)
 
     self.input = self.ui.Input()
     self:bind('mouse1', 'left-click')
+    self:bind('mouse2', 'right-click')
     self:bind('return', 'key-enter')
 
     self.hot = false
@@ -22,6 +23,8 @@ function Base:basePreNew(x, y, w, h, settings)
     self.exit = false
     self.selected_enter = false
     self.selected_exit = false
+
+    self.getMousePosition = function() return love.mouse.getPosition() end
 
     self.pressing = false
     self.previous_hot = false
@@ -38,14 +41,13 @@ function Base:basePostNew()
 end
 
 function Base:basePreUpdate(dt, parent)
-    local x, y = love.mouse.getPosition()
+    local x, y = self.getMousePosition()
     if parent and not self.draggable and not self.resizable and self.type ~= 'Scrollarea' then self.x, self.y = parent.x + self.ix, parent.y + self.iy end
 
     -- Check for hot
     local sax, say, aw, ah = self.x_offset or 0, self.y_offset or 0, self.area_width or self.w, self.area_height or self.h
-    local s = 1
-    if x >= s*(self.x + sax) and x <= s*(self.x + sax + aw) and 
-       y >= s*(self.y + say) and y <= s*(self.y + say + ah) then
+    if x >= (self.x + sax) and x <= (self.x + sax + aw) and 
+       y >= (self.y + say) and y <= (self.y + say + ah) then
         self.hot = true
     else self.hot = false end
 
@@ -122,10 +124,17 @@ function Base:basePostUpdate(dt)
     self.input:update(dt)
 end
 
-function Base:baseDraw()
+function Base:basePreDraw()
     -- Draw extensions
     for _, extension in ipairs(self.extensions or {}) do
         if extension.draw then extension.draw(self) end
+    end
+end
+
+function Base:basePostDraw()
+    -- Draw extensions
+    for _, extension in ipairs(self.extensions or {}) do
+        if extension.overlay then extension.overlay(self) end
     end
 end
 

@@ -56,7 +56,8 @@ function Checkbox:update(dt, parent)
 end
 
 function Checkbox:draw()
-    self:baseDraw()
+    self:basePreDraw()
+    self:basePostDraw()
 end
 
 function Checkbox:toggle()
