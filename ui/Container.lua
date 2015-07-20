@@ -20,6 +20,8 @@ function Container:containerNew(settings)
     self.elements = {}
     self.currently_focused_element = nil
     self.any_selected = false
+    self.disable_directional_selection = settings.disable_directional_selection
+    self.disable_tab_selection = settings.disable_tab_selection
     if self.auto_align then 
         self.auto_spacing = settings.auto_spacing or 5
         self.auto_margin = settings.auto_margin or 5
@@ -30,12 +32,16 @@ end
 
 function Container:containerUpdate(dt, parent)
     -- Focus on elements
-    if self.selected and not self.input:down('previous-modifier') and self.input:pressed('focus-next') then self:focusNext() end
-    if self.selected and self.input:down('previous-modifier') and self.input:pressed('focus-next') then self:focusPrevious() end
-    if self.selected and self.input:pressed('focus-left') then self:focusDirection('left') end
-    if self.selected and self.input:pressed('focus-right') then self:focusDirection('right') end
-    if self.selected and self.input:pressed('focus-up') then self:focusDirection('up') end
-    if self.selected and self.input:pressed('focus-down') then self:focusDirection('down') end
+    if not self.disable_tab_selection then
+        if self.selected and not self.input:down('previous-modifier') and self.input:pressed('focus-next') then self:focusNext() end
+        if self.selected and self.input:down('previous-modifier') and self.input:pressed('focus-next') then self:focusPrevious() end
+    end
+    if not self.disable_directional_selection then
+        if self.selected and self.input:pressed('focus-left') then self:focusDirection('left') end
+        if self.selected and self.input:pressed('focus-right') then self:focusDirection('right') end
+        if self.selected and self.input:pressed('focus-up') then self:focusDirection('up') end
+        if self.selected and self.input:pressed('focus-down') then self:focusDirection('down') end
+    end
     for i, element in ipairs(self.elements) do
         if not element.selected or not i == self.currently_focused_element then
             element.selected = false

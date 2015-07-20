@@ -13,6 +13,7 @@ Frame:implement(Draggable)
 Frame:implement(Resizable)
 
 function Frame:new(ui, x, y, w, h, settings)
+    local settings = settings or {}
     self.ui = ui
     self.id = self.ui.addToElementsList(self)
     self.type = 'Frame'
@@ -49,13 +50,22 @@ end
 
 function Frame:draw()
     if self.closed then return end
-    self:baseDraw()
+    self:basePreDraw()
     if self.closeable then self:closeableDraw() end
     self:containerDraw()
+    self:basePostDraw()
 end
 
 function Frame:addElement(element)
     return self:containerAddElement(element)
+end
+
+function Frame:removeElement(id)
+    return self:containerRemoveElement(id)
+end
+
+function Frame:getElement(id)
+    return self:containerGetElement(id)
 end
 
 return Frame

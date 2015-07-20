@@ -89,6 +89,16 @@ function Textarea:update(dt, parent)
 
     self.undo_pushed = false
 
+    -- Set line text
+    self.line_text = {}
+    local n = 0
+    for i, c in ipairs(self.text_table) do 
+        if self.text_table[i] == '\n' then
+            table.insert(self.line_text, {character = c, line = n+1})
+            n = n + 1
+        else table.insert(self.line_text, {character = c, line = (self.text.characters[i-n] and self.text.characters[i-n].line) or 0}) end
+    end
+
     if self.editing_locked then 
         self.selected = false
         return
@@ -101,29 +111,6 @@ function Textarea:update(dt, parent)
     if self.cursor_blink_timer > self.cursor_blink_interval then
         self.cursor_blink_timer = 0
         self.cursor_visible = not self.cursor_visible
-    end
-
-    -- Single line text scrolling
-    local w = self.w - 2*self.text_margin
-    if self.single_line and #self.selection_positions > 0 then
-        if not self.selection_index then
-            local x1, y1 = self.selection_positions[1].x - self.text_x, self.selection_positions[1].y
-            local x2, y2 = x1 + self.selection_sizes[1].w, y1 + self.selection_sizes[1].h
-            if x2 > w - self.text_add_x then
-                self.text_add_x = self.text_add_x - w/2
-            elseif x1 < -self.text_add_x then
-                self.text_add_x = self.text_add_x + w/2
-            end
-        else
-            local x1, y1 = self.selection_positions[1].x - self.text_x, self.selection_positions[1].y
-            local n = #self.selection_positions
-            local x2, y2 = self.selection_positions[n].x - self.text_x + self.selection_sizes[n].w, self.selection_positions[n].y + self.selection_sizes[n].h
-            if x2 > w - self.text_add_x then
-                self.text_add_x = self.text_add_x - w/2
-            elseif x2 < -self.text_add_x then
-                self.text_add_x = self.text_add_x + w/2
-            end
-        end
     end
 
     -- Everything up has to happen every frame if the textarea is selected or not
@@ -342,7 +329,9 @@ function Textarea:update(dt, parent)
 
     -- New line
     if self.input:pressed('enter') then 
-        self:textinput('\n') 
+        if not self.single_line then
+            self:textinput('\n') 
+        end
     end
 
     -- Tab
@@ -438,6 +427,29 @@ function Textarea:update(dt, parent)
             local h = self:getIndexLine(self.index) or self:getIndexLine(self.index - 1) or 0
             table.insert(self.selection_positions, {x = self.text_x + u, y = self.text_y + h*self.font:getHeight()})
             table.insert(self.selection_sizes, {w = v - u, h = self.font:getHeight()})
+        end
+    end
+
+    -- Single line text scrolling
+    local w = self.w - 2*self.text_margin
+    if self.single_line and #self.selection_positions > 0 then
+        if not self.selection_index then
+            local x1, y1 = self.selection_positions[1].x - self.text_x, self.selection_positions[1].y
+            local x2, y2 = x1 + self.selection_sizes[1].w, y1 + self.selection_sizes[1].h
+            if x2 > w - self.text_add_x then
+                self.text_add_x = self.text_add_x - w/4
+            elseif x1 < -self.text_add_x then
+                self.text_add_x = self.text_add_x + w/4
+            end
+        else
+            local x1, y1 = self.selection_positions[1].x - self.text_x, self.selection_positions[1].y
+            local n = #self.selection_positions
+            local x2, y2 = self.selection_positions[n].x - self.text_x + self.selection_sizes[n].w, self.selection_positions[n].y + self.selection_sizes[n].h
+            if x2 > w - self.text_add_x then
+                self.text_add_x = self.text_add_x - w/4
+            elseif x2 < -self.text_add_x then
+                self.text_add_x = self.text_add_x + w/4
+            end
         end
     end
 
@@ -588,7 +600,11 @@ end
 
 function Textarea:getMaxLines()
     local n_lines = 0
-    for i, c in ipairs(self.line_text) do n_lines = c.line + 1 end
+    for i, c in ipairs(self.line_text) do 
+        if c.character ~= '\n' then
+            n_lines = c.line + 1 
+        end
+    end
     return n_lines
 end
 

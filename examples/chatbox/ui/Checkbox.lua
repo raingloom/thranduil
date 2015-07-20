@@ -9,6 +9,7 @@ Checkbox:implement(Draggable)
 Checkbox:implement(Resizable)
 
 function Checkbox:new(ui, x, y, w, h, settings)
+    local settings = settings or {}
     self.ui = ui
     self.id = self.ui.addToElementsList(self)
     self.type = 'Checkbox'
@@ -55,7 +56,8 @@ function Checkbox:update(dt, parent)
 end
 
 function Checkbox:draw()
-    self:baseDraw()
+    self:basePreDraw()
+    self:basePostDraw()
 end
 
 function Checkbox:toggle()

@@ -18,12 +18,12 @@ UI.keyreleased = function(key)
 end
 UI.mousepressed = function(x, y, button) 
     for _, t in ipairs(UI.elements) do
-        t.input:mousepressed(button)
+        t.input:mousepressed(x, y, button)
     end
 end
 UI.mousereleased = function(x, y, button) 
     for _, t in ipairs(UI.elements) do
-        t.input:mousereleased(button)
+        t.input:mousereleased(x, y, button)
     end
 end
 UI.gamepadpressed = function(joystick, button) 
@@ -86,6 +86,13 @@ UI.elements = setmetatable({}, {__mode = 'v'})
 UI.addToElementsList = function(element)
     table.insert(UI.elements, element)
     return UI.getUID()
+end
+UI.removeFromElementsList = function(id)
+    for i, element in ipairs(UI.elements) do
+        if element.id == id then
+            table.remove(UI.elements, i) return
+        end
+    end
 end
 
 local Button = require(ui_path .. 'Button')

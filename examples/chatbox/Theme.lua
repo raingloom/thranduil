@@ -1,7 +1,7 @@
-local TestTheme = {}
+local Theme = {}
 
-TestTheme.Button = {}
-TestTheme.Button.draw = function(self)
+Theme.Button = {}
+Theme.Button.draw = function(self)
     love.graphics.setColor(64, 64, 64)
     if self.hot then love.graphics.setColor(96, 96, 96) end
     if self.down then love.graphics.setColor(32, 32, 32) end
@@ -12,8 +12,8 @@ TestTheme.Button.draw = function(self)
     end
 end
 
-TestTheme.Checkbox = {}
-TestTheme.Checkbox.draw = function(self)
+Theme.Checkbox = {}
+Theme.Checkbox.draw = function(self)
     love.graphics.setColor(64, 64, 64)
     love.graphics.rectangle('fill', self.x, self.y, self.w, self.h)
     if self.hot then 
@@ -30,8 +30,8 @@ TestTheme.Checkbox.draw = function(self)
     end
 end
 
-TestTheme.Slider = {}
-TestTheme.Slider.draw = function(self)
+Theme.Slider = {}
+Theme.Slider.draw = function(self)
     love.graphics.setColor(64, 64, 64)
     if self.hot then love.graphics.setColor(96, 96, 96) end
     love.graphics.rectangle('fill', self.x, self.y, self.w, self.h)
@@ -48,8 +48,8 @@ end
 local major, minor, rev = love.getVersion()
 local love_version = major .. '.' .. minor .. '.' .. rev
 
-TestTheme.Textarea = {}
-TestTheme.Textarea.draw = function(self)
+Theme.Textarea = {}
+Theme.Textarea.draw = function(self)
     love.graphics.setLineStyle('rough')
 
     -- Draw textinput background
@@ -110,8 +110,8 @@ TestTheme.Textarea.draw = function(self)
     love.graphics.setColor(255, 255, 255, 255)
 end
 
-TestTheme.Scrollarea = {}
-TestTheme.Scrollarea.draw = function(self)
+Theme.Scrollarea = {}
+Theme.Scrollarea.draw = function(self)
     -- Draw scrollarea frame
     love.graphics.setColor(32, 32, 32)
     love.graphics.rectangle('fill', self.x, self.y, self.w, self.h)
@@ -136,8 +136,8 @@ TestTheme.Scrollarea.draw = function(self)
     end
 end
 
-TestTheme.Frame = {}
-TestTheme.Frame.draw = function(self)
+Theme.Frame = {}
+Theme.Frame.draw = function(self)
     -- Draw frame
     love.graphics.setColor(32, 32, 32)
     love.graphics.rectangle('fill', self.x, self.y, self.w, self.h)
@@ -181,4 +181,4 @@ TestTheme.Frame.draw = function(self)
     end
 end
 
-return TestTheme
+return Theme

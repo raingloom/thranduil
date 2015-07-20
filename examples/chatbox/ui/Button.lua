@@ -9,6 +9,7 @@ Button:implement(Draggable)
 Button:implement(Resizable)
 
 function Button:new(ui, x, y, w, h, settings)
+    local settings = settings or {}
     self.ui = ui
     self.id = self.ui.addToElementsList(self)
     self.type = 'Button'
@@ -27,8 +28,8 @@ function Button:update(dt, parent)
     if parent then 
         if parent.type == 'Frame' then
             if self.annotation == "Frame's close button" then
-                self.ix = parent.w - parent.close_margin - parent.close_button_width
-                self.iy = parent.close_margin
+                self.ix = parent.w - parent.close_margin_right - parent.close_button_width
+                self.iy = parent.close_margin_top
             end
         elseif parent.type == 'Scrollarea' then
             if self.annotation == "Vertical scrollbar's top button" then
@@ -59,10 +60,12 @@ function Button:update(dt, parent)
 end
 
 function Button:draw()
-    self:baseDraw()
+    self:basePreDraw()
+    self:basePostDraw()
 end
 
 function Button:press()
+    self.selected = true
     self.pressed = true
     self.released = true
 end

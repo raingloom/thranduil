@@ -1,11 +1,11 @@
-TestTheme = require 'TestTheme'
+Theme = require 'Theme'
 UI = require 'ui/UI'
 Chatbox = require 'Chatbox'
 
 function love.load()
     UI.registerEvents()
     
-    chatbox = Chatbox(10, 380, 300, 210)
+    chatbox = Chatbox(10, 200, 300, 390)
 end
 
 function love.update(dt)
