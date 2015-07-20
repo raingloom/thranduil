@@ -267,35 +267,51 @@ function Scrollarea:getElement(id)
     return self:containerGetElement(id)
 end
 
-function Scrollarea:scrollUp(step)
+function Scrollarea:scrollUp(step, stop)
     if self.y_offset - step >= 0 then
         self.y_offset = self.y_offset - step
         self.scroll_y = self.scroll_y + step
         for _, element in ipairs(self.elements) do element:update(0, self) end
+    else
+        if not stop then
+            for i = 1, step do self:scrollUp(1, true) end
+        end
     end
 end
 
-function Scrollarea:scrollDown(step)
+function Scrollarea:scrollDown(step, stop)
     if self.y_offset + step <= self.h - self.area_height then
         self.y_offset = self.y_offset + step
         self.scroll_y = self.scroll_y - step
         for _, element in ipairs(self.elements) do element:update(0, self) end
+    else
+        if not stop then
+            for i = 1, step do self:scrollDown(1, true) end
+        end
     end
 end
 
-function Scrollarea:scrollLeft(step)
+function Scrollarea:scrollLeft(step, stop)
     if self.x_offset - step >= 0 then
         self.x_offset = self.x_offset - step
         self.scroll_x = self.scroll_x + step
         for _, element in ipairs(self.elements) do element:update(0, self) end
+    else
+        if not stop then
+            for i = 1, step do self:scrollLeft(1, true) end
+        end
     end
 end
 
-function Scrollarea:scrollRight(step)
+function Scrollarea:scrollRight(step, stop)
     if self.x_offset + step <= self.w - self.area_width then
         self.x_offset = self.x_offset + step
         self.scroll_x = self.scroll_x - step
         for _, element in ipairs(self.elements) do element:update(0, self) end
+    else
+        if not stop then
+            for i = 1, step do self:scrollRight(1, true) end
+        end
     end
 end
 

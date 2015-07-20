@@ -6,8 +6,7 @@ function Chatbox:new(x, y, w, h)
                                                             area_width = w - 10 - 15, area_height = h - 70, show_scrollbars = true})
     self.main_frame:addElement(self.scrollarea)
 
-    local font = love.graphics.newFont('OpenSans-Regular.ttf', 14)
-    self.textarea = UI.Textarea(0, 0, w - 10, h - 70, {extensions = {Theme.Textarea}, font = font, text_margin = 5, editing_locked = true})
+    self.textarea = UI.Textarea(0, 0, w - 10, h - 70, {extensions = {Theme.Textarea}, text_margin = 5, editing_locked = true})
     self.scrollarea:addElement(self.textarea)
 
     self.textinput = UI.Textarea(5, 25 + h - 70 + 5, w - 50, h, {extensions = {Theme.Textarea}, single_line = true, font = font, text_margin = 4})
@@ -27,6 +26,14 @@ function Chatbox:update(dt)
             local chat_text = os.date("%H:%M") .. ': ' .. text .. '\n'
             self.textarea:addText(chat_text)
 
+            -- Scrolling
+            if self.textarea:getMaxLines()*self.textarea.font:getHeight() > self.scrollarea.area_height then
+                self.scrollarea.vertical_scrolling = true
+                self.scrollarea.h = self.textarea:getMaxLines()*self.textarea.font:getHeight() + 4*self.textarea.text_margin
+                self.textarea.h = self.textarea:getMaxLines()*self.textarea.font:getHeight() + 4*self.textarea.text_margin
+                self.scrollarea:scrollDown(100)
+            end
+
             -- Delete textinput's text
             self.textinput:selectAll()
             self.textinput:delete()
@@ -34,13 +41,6 @@ function Chatbox:update(dt)
     end
 
     self.main_frame:update(dt)
-
-    -- Scrolling
-    if self.textarea:getMaxLines()*self.textarea.font:getHeight() > self.scrollarea.area_height then
-        self.scrollarea.vertical_scrolling = true
-        self.scrollarea.h = self.textarea:getMaxLines()*self.textarea.font:getHeight() + 4*self.textarea.text_margin
-        self.textarea.h = self.textarea:getMaxLines()*self.textarea.font:getHeight() + 4*self.textarea.text_margin
-    end
 end
 
 function Chatbox:draw()

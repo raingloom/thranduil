@@ -488,6 +488,16 @@ function Textarea:updateText()
         i = i + 1
     end
     self.text = self.ui.Text(self.text_x, self.text_y, text_str, self.text_settings)
+
+    -- Set line text
+    self.line_text = {}
+    local n = 0
+    for i, c in ipairs(self.text_table) do 
+        if self.text_table[i] == '\n' then
+            table.insert(self.line_text, {character = c, line = n+1})
+            n = n + 1
+        else table.insert(self.line_text, {character = c, line = (self.text.characters[i-n] and self.text.characters[i-n].line) or 0}) end
+    end
 end
 
 function Textarea:printText()
