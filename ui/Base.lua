@@ -24,14 +24,11 @@ function Base:basePreNew(x, y, w, h, settings)
     self.selected_enter = false
     self.selected_exit = false
 
-    self:collision = function (x, y)
+    self.collision = function (self, x, y)
         local sax, say, aw, ah = self.x_offset or 0, self.y_offset or 0, self.area_width or self.w, self.area_height or self.h
-        if x >= (self.x + sax) and x <= (self.x + sax + aw) and 
-            y >= (self.y + say) and y <= (self.y + say + ah) then
-            return = true
-        else
-            return false
-        end
+        if x >= (self.x + sax) and x <= (self.x + sax + aw) and y >= (self.y + say) and y <= (self.y + say + ah) then
+            return true
+        else return false end
     end
 
     self.getMousePosition = function() return love.mouse.getPosition() end
@@ -55,7 +52,7 @@ function Base:basePreUpdate(dt, parent)
     if parent and not self.draggable and not self.resizable and self.type ~= 'Scrollarea' then self.x, self.y = parent.x + self.ix, parent.y + self.iy end
 
     -- Check for hot
-    self.hot = self:collision(x,y)
+    self.hot = self:collision(x, y)
 
     -- Check for enter 
     if self.hot and not self.previous_hot then
