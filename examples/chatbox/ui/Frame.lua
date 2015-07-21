@@ -1,5 +1,5 @@
-local ui_path = tostring(...):sub(1, -6)
-local Object = require(ui_path .. 'classic/classic')
+local ui_path = (...):match('(.-)[^%.]+$') .. '.'
+local Object = require(ui_path .. 'classic.classic')
 local Base = require(ui_path .. 'Base')
 local Closeable = require(ui_path .. 'Closeable')
 local Container = require(ui_path .. 'Container')

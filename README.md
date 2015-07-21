@@ -7,7 +7,7 @@ A UI module for LÖVE. Facilitates the creation of game specific UI through UI e
 Require the [module](https://github.com/adonaac/thranduil/blob/master/ui/UI.lua):
 
 ```lua
-UI = require 'ui/UI'
+UI = require 'UI'
 ```
 
 And register it to most of LÖVE's callbacks:

@@ -1,5 +1,5 @@
-local ui_path = tostring(...):sub(1, -5)
-local Object = require(ui_path .. 'classic/classic')
+local ui_path = (...):match('(.-)[^%.]+$') .. '.'
+local Object = require(ui_path .. 'classic.classic')
 local Base = Object:extend('Base')
 
 function Base:basePreNew(x, y, w, h, settings)
