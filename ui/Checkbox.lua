@@ -1,5 +1,5 @@
-local ui_path = tostring(...):sub(1, -9)
-local Object = require(ui_path .. 'classic/classic')
+local ui_path = (...):match('(.-)[^%.]+$') .. '.'
+local Object = require(ui_path .. 'classic.classic')
 local Base = require(ui_path .. 'Base')
 local Draggable = require(ui_path .. 'Draggable')
 local Resizable = require(ui_path .. 'Resizable')
