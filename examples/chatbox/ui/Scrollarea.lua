@@ -1,5 +1,5 @@
-local ui_path = tostring(...):sub(1, -11)
-local Object = require(ui_path .. 'classic/classic')
+local ui_path = (...):match('(.-)[^%.]+$') .. '.'
+local Object = require(ui_path .. 'classic.classic')
 local Base = require(ui_path .. 'Base')
 local Container = require(ui_path .. 'Container')
 local Scrollarea = Object:extend('Scrollarea')

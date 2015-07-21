@@ -1,4 +1,4 @@
-local text_path = tostring(...):sub(1, -5)
+local text_path = (...):match('(.-)[^%.]+$') .. '.'
 local Text = {}
 Text.__index = Text
 require(text_path .. 'utf8-l')

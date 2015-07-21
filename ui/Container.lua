@@ -1,5 +1,5 @@
-local ui_path = tostring(...):sub(1, -10)
-local Object = require(ui_path .. 'classic/classic')
+local ui_path = (...):match('(.-)[^%.]+$') .. '.'
+local Object = require(ui_path .. 'classic.classic')
 local Container = Object:extend('Container')
 
 function Container:containerNew(settings)

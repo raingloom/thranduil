@@ -7,7 +7,7 @@ To start, we'll create the `main.lua` file:
 ```lua
 -- main.lua
 Theme = require 'TestTheme'
-UI = require 'ui/UI'
+UI = require 'UI'
 
 function love.load()
   UI.registerEvents()
