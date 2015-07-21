@@ -24,7 +24,7 @@ function Base:basePreNew(x, y, w, h, settings)
     self.selected_enter = false
     self.selected_exit = false
 
-    self.collision = function (self, x, y)
+    self.collision = function(self, x, y)
         local sax, say, aw, ah = self.x_offset or 0, self.y_offset or 0, self.area_width or self.w, self.area_height or self.h
         if x >= (self.x + sax) and x <= (self.x + sax + aw) and y >= (self.y + say) and y <= (self.y + say + ah) then
             return true
